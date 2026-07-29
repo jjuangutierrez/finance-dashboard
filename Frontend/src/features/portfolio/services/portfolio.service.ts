@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import type { Portfolio, CreatePortfolioRequest, UpdatePortfolioRequest } from "../types/portfolio.types";
+import type { Portfolio, CreatePortfolioRequest, UpdatePortfolioRequest, PortfolioSummary } from "../types/portfolio.types";
 
 export const portfolioService = {
   async getAll(): Promise<Portfolio[]> {
@@ -18,5 +18,10 @@ export const portfolioService = {
 
   async delete(id: string): Promise<void> {
     await api.delete(`/portfolios/${id}`);
+  },
+
+  async getSummary(id: string): Promise<PortfolioSummary> {
+    const response = await api.get<PortfolioSummary>(`/portfolios/${id}/summary`);
+    return response.data;
   },
 };

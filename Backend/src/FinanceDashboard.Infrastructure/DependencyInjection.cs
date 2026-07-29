@@ -28,19 +28,14 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+        services.Configure<GoogleAuthSettings>(configuration.GetSection("GoogleAuth"));
 
         var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()
             ?? throw new InvalidOperationException("JwtSettings is not configured in appsettings.json.");
 
-        services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
-
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
-
-        services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
-
-        services.Configure<GoogleAuthSettings>(configuration.GetSection("GoogleAuth"));
         services.AddScoped<IGoogleAuthValidator, GoogleAuthValidator>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

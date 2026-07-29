@@ -95,4 +95,18 @@ public class PortfoliosController : ControllerBase
             return NotFound();
         }
     }
+
+    [HttpGet("{id:guid}/summary")]
+    public async Task<IActionResult> GetSummary(Guid id)
+    {
+        try
+        {
+            var summary = await _portfolioService.GetPortfolioSummaryAsync(id);
+            return Ok(summary);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 }

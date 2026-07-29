@@ -16,3 +16,10 @@ export interface UpdatePortfolioRequest {
   description?: string;
   status?: string;
 }
+
+export interface PortfolioSummary {
+  totalIncome: number;
+  totalExpenses: number;
+  netBalance: number;
+  totalTransactions: number;
+}

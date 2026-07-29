@@ -9,5 +9,6 @@ public interface IPortfolioService
     Task<Portfolio?> GetByIdAsync(Guid portfolioId);
     Task<Portfolio> CreateAsync(CreatePortfolioRequest request);
     Task UpdateAsync(Guid portfolioId, UpdatePortfolioRequest request);
+    Task<PortfolioSummaryDto> GetPortfolioSummaryAsync(Guid portfolioId);
     Task DeleteAsync(Guid portfolioId);
 }

@@ -37,6 +37,8 @@ public class Widget : AuditableEntity
         int width,
         int height)
     {
+        Id = Guid.NewGuid();
+
         Guard.AgainstNullOrWhiteSpace(name, nameof(name));
         Guard.AgainstMaxLength(name, 50, nameof(name));
         Guard.AgainstMaxLength(description, 150, nameof(description));

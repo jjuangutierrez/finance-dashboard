@@ -19,7 +19,7 @@ public class PortfolioService : IPortfolioService
 
     public async Task<List<Portfolio>> GetUserPortfoliosAsync()
     {
-        var userId = _currentUser.UserId 
+        var userId = _currentUser.UserId
             ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
         return await _context.Portfolios
@@ -29,7 +29,7 @@ public class PortfolioService : IPortfolioService
 
     public async Task<Portfolio?> GetByIdAsync(Guid portfolioId)
     {
-        var userId = _currentUser.UserId 
+        var userId = _currentUser.UserId
             ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
         return await _context.Portfolios
@@ -38,7 +38,7 @@ public class PortfolioService : IPortfolioService
 
     public async Task<Portfolio> CreateAsync(CreatePortfolioRequest request)
     {
-        var userId = _currentUser.UserId 
+        var userId = _currentUser.UserId
             ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
         var portfolio = new Portfolio(userId, request.Title, request.Description);
@@ -51,7 +51,7 @@ public class PortfolioService : IPortfolioService
 
     public async Task UpdateAsync(Guid portfolioId, UpdatePortfolioRequest request)
     {
-        var userId = _currentUser.UserId 
+        var userId = _currentUser.UserId
             ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
         var portfolio = await _context.Portfolios
@@ -74,9 +74,43 @@ public class PortfolioService : IPortfolioService
         await _context.SaveChangesAsync();
     }
 
+    public async Task<PortfolioSummaryDto> GetPortfolioSummaryAsync(Guid portfolioId)
+    {
+        var userId = _currentUser.UserId
+            ?? throw new UnauthorizedAccessException("User is not authenticated.");
+
+        var portfolioExists = await _context.Portfolios
+            .AnyAsync(p => p.Id == portfolioId && p.UserId == userId);
+
+        if (!portfolioExists)
+            throw new KeyNotFoundException("Portfolio not found or access denied.");
+
+        var transactions = await _context.Transactions
+            .Where(t => t.Widget.PortfolioId == portfolioId)
+            .Select(t => new { t.Amount, t.Type })
+            .ToListAsync();
+
+        var totalIncome = transactions
+            .Where(t => t.Type == TransactionType.Income)
+            .Sum(t => t.Amount);
+
+        var totalExpenses = transactions
+            .Where(t => t.Type == TransactionType.Expense)
+            .Sum(t => t.Amount);
+
+        var netBalance = totalIncome - totalExpenses;
+
+        return new PortfolioSummaryDto(
+            totalIncome,
+            totalExpenses,
+            netBalance,
+            transactions.Count
+        );
+    }
+
     public async Task DeleteAsync(Guid portfolioId)
     {
-        var userId = _currentUser.UserId 
+        var userId = _currentUser.UserId
             ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
         var portfolio = await _context.Portfolios

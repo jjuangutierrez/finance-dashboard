@@ -78,4 +78,32 @@ public class WidgetsController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+
+    [HttpPatch("layout")]
+    public async Task<IActionResult> UpdateLayout(Guid portfolioId, [FromBody] List<UpdateWidgetLayoutRequest> requests)
+    {
+        try
+        {
+            await _widgetService.UpdateLayoutAsync(portfolioId, requests);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("{widgetId:guid}")]
+    public async Task<IActionResult> DeleteWidget(Guid portfolioId, Guid widgetId)
+    {
+        try
+        {
+            await _widgetService.DeleteWidgetAsync(portfolioId, widgetId);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
 }
