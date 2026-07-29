@@ -1,0 +1,59 @@
+{
+  "home": {
+    "nav": {
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "about": "Sobre mí"
+    },
+    "hero": {
+      "title": "Organiza tus finanzas",
+      "subtitle": "a tu manera.",
+      "description": "Diseña tu propio panel financiero arrastrando y soltando widgets. Sin gráficos complicados ni números aburridos. Creado para personas reales.",
+      "cta_signup": "Regístrate gratis",
+      "cta_login": "Ya tengo una cuenta",
+      "cta_dashboard": "Ir al Panel",
+      "cta_logout": "Cerrar sesión"
+    },
+    "register": {
+      "title": "Bienvenido a FinanceApp",
+      "subtitle": "Encuentra nuevas formas de hacer crecer tu dinero",
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Nombre",
+      "lastName": "Apellido",
+      "optional": "(opcional)",
+      "lastNamePlaceholder": "Apellido",
+      "username": "Usuario",
+      "usernamePlaceholder": "Elige un nombre de usuario",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "Correo electrónico",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Crea una contraseña",
+      "passwordHint": "Usa 8 o más letras, números y símbolos",
+      "passwordTips": "Consejos para tu contraseña",
+      "continue": "Continuar",
+      "or": "O",
+      "google": "Continuar con Google",
+      "termsPrefix": "Al continuar, aceptas nuestros",
+      "termsLink": "Términos de Servicio",
+      "termsMiddle": "y confirmas que has leído nuestra",
+      "privacyLink": "Política de Privacidad",
+      "alreadyMember": "¿Ya tienes una cuenta?",
+      "login": "Inicia sesión"
+    },
+    "login": {
+      "title": "Bienvenido de nuevo",
+      "subtitle": "Ingresa tus credenciales para continuar",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "Correo electrónico",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Ingresa tu contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "loading": "Iniciando sesión...",
+      "continue": "Iniciar Sesión",
+      "or": "O",
+      "noAccount": "¿No tienes una cuenta?",
+      "signup": "Regístrate"
+    },
+    "footer": "© {{year}} My App. Simple, intuitivo y hecho para ti."
+  }
+}

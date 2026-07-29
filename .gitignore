@@ -1,0 +1,44 @@
+# Visual Studio / .NET
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Node
+**/node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build
+**/dist/
+**/build/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Temporary
+*.tmp
+*.cache
+
+# JetBrains
+*.iml

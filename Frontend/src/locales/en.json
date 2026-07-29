@@ -1,0 +1,59 @@
+{
+  "home": {
+    "nav": {
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "about": "About Me"
+    },
+    "hero": {
+      "title": "Organize your finances",
+      "subtitle": "your own way.",
+      "description": "Design your own financial dashboard by dragging and dropping widgets. No complicated charts or boring numbers. Built for real people.",
+      "cta_signup": "Sign Up for Free",
+      "cta_login": "I Already Have an Account",
+      "cta_dashboard": "Go to Dashboard",
+      "cta_logout": "Log Out"
+    },
+    "register": {
+      "title": "Welcome to FinanceApp",
+      "subtitle": "Find new ways to grow your wealth",
+      "firstName": "First name",
+      "firstNamePlaceholder": "First name",
+      "lastName": "Last name",
+      "optional": "(optional)",
+      "lastNamePlaceholder": "Last name",
+      "username": "Username",
+      "usernamePlaceholder": "Choose a username",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Email",
+      "password": "Password",
+      "passwordPlaceholder": "Create a password",
+      "passwordHint": "Use 8 or more letters, numbers and symbols",
+      "passwordTips": "Password tips",
+      "continue": "Continue",
+      "or": "OR",
+      "google": "Continue with Google",
+      "termsPrefix": "By continuing, you agree to our",
+      "termsLink": "Terms of Service",
+      "termsMiddle": "and acknowledge you've read our",
+      "privacyLink": "Privacy Policy",
+      "alreadyMember": "Already a member?",
+      "login": "Log in"
+    },
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Enter your credentials to continue",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot your password?",
+      "loading": "Logging in...",
+      "continue": "Log In",
+      "or": "OR",
+      "noAccount": "Don't have an account?",
+      "signup": "Sign up"
+    },
+    "footer": "© {{year}} My App. Simple, user-friendly, and built for you."
+  }
+}
