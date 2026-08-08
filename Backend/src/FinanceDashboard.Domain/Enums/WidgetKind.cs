@@ -5,4 +5,5 @@ public enum WidgetKind
     Tracker,
     RecurringExpense,
     SavingGoal,
+    Summary
 }

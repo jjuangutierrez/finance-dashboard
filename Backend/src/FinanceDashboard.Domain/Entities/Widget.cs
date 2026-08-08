@@ -57,6 +57,28 @@ public class Widget : AuditableEntity
         Height = height;
     }
 
+    public static Widget CreateSummary(
+            Guid portfolioId,
+            string name = "Portfolio Summary",
+            string? description = null,
+            int posX = 0,
+            int posY = 0,
+            int width = 12,
+            int height = 2)
+    {
+        var widget = new Widget(
+            portfolioId,
+            name,
+            description,
+            WidgetKind.Summary,
+            posX,
+            posY,
+            width,
+            height);
+
+        return widget;
+    }
+
     public static Widget CreateTracker(
         Guid portfolioId,
         string name,

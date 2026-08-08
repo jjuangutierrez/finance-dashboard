@@ -8,4 +8,6 @@ public record TransactionDto(
     decimal Amount,
     string Type,
     int? PaymentDay,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    string? WidgetName = null
+);

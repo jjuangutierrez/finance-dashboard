@@ -3,6 +3,7 @@ using FinanceDashboard.Application.Interfaces;
 using FinanceDashboard.Domain.Entities;
 using FinanceDashboard.Domain.Enums;
 using FinanceDashboard.Application.DTOs;
+using FinanceDashboard.Application.DTOs.Transactions;
 
 namespace FinanceDashboard.Application.Services;
 
@@ -44,6 +45,19 @@ public class PortfolioService : IPortfolioService
         var portfolio = new Portfolio(userId, request.Title, request.Description);
 
         _context.Portfolios.Add(portfolio);
+
+        var defaultSummaryWidget = Widget.CreateSummary(
+            portfolioId: portfolio.Id,
+            name: "Portfolio Summary",
+            description: "Overall portfolio financial balance",
+            posX: 0,
+            posY: 0,
+            width: 12,
+            height: 2
+        );
+
+        _context.Widgets.Add(defaultSummaryWidget);
+
         await _context.SaveChangesAsync();
 
         return portfolio;
@@ -85,18 +99,18 @@ public class PortfolioService : IPortfolioService
         if (!portfolioExists)
             throw new KeyNotFoundException("Portfolio not found or access denied.");
 
-        var transactions = await _context.Transactions
-            .Where(t => t.Widget.PortfolioId == portfolioId)
-            .Select(t => new { t.Amount, t.Type })
-            .ToListAsync();
+        var baseQuery = _context.Transactions
+            .Where(t => t.Widget.PortfolioId == portfolioId);
 
-        var totalIncome = transactions
+        var totalIncome = await baseQuery
             .Where(t => t.Type == TransactionType.Income)
-            .Sum(t => t.Amount);
+            .SumAsync(t => (decimal?)t.Amount) ?? 0m;
 
-        var totalExpenses = transactions
+        var totalExpenses = await baseQuery
             .Where(t => t.Type == TransactionType.Expense)
-            .Sum(t => t.Amount);
+            .SumAsync(t => (decimal?)t.Amount) ?? 0m;
+
+        var totalTransactions = await baseQuery.CountAsync();
 
         var netBalance = totalIncome - totalExpenses;
 
@@ -104,9 +118,37 @@ public class PortfolioService : IPortfolioService
             totalIncome,
             totalExpenses,
             netBalance,
-            transactions.Count
+            totalTransactions
         );
     }
+
+public async Task<List<TransactionDto>> GetPortfolioTransactionsAsync(Guid portfolioId)
+{
+    var userId = _currentUser.UserId
+        ?? throw new UnauthorizedAccessException("User is not authenticated.");
+
+    var portfolioExists = await _context.Portfolios
+        .AnyAsync(p => p.Id == portfolioId && p.UserId == userId);
+
+    if (!portfolioExists)
+        throw new KeyNotFoundException("Portfolio not found or access denied.");
+
+    return await _context.Transactions
+        .Where(t => t.Widget.PortfolioId == portfolioId)
+        .OrderByDescending(t => t.CreatedAt)
+        .Select(t => new TransactionDto(
+            t.Id,
+            t.WidgetId,
+            t.Title,
+            t.Description,
+            t.Amount,
+            t.Type.ToString().ToLower(),
+            t.RecurringMetadata != null ? (int?)t.RecurringMetadata.PaymentDay : null,
+            t.CreatedAt,
+            t.Widget.Name
+        ))
+        .ToListAsync();
+}
 
     public async Task DeleteAsync(Guid portfolioId)
     {

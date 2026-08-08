@@ -35,7 +35,7 @@ export function TrackerWidget({
   widgetId,
   name,
   description,
-  onDeleteWidget,
+  onDeleteWidget, 
 }: TrackerWidgetProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);

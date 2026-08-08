@@ -24,7 +24,7 @@ export function Dashboard() {
             )}
           </div>
 
-          <div className="flex-1 overflow-auto relative">
+          <div className="flex-1 overflow-hidden relative">
             <FinancialCanvas portfolioId={selectedPortfolioId} />
           </div>
         </main>

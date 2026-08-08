@@ -1,196 +1,186 @@
-import { useState, useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import {
-  Responsive,
-  WidthProvider,
-  type LayoutItem,
-} from "react-grid-layout/legacy";
-import { widgetService } from "@/features/widget/services/widget.service";
-import type {
-  Widget,
-  WidgetKind,
-  UpdateWidgetLayoutItem,
-} from "@/features/widget/types/widget.types";
+  ReactFlow,
+  ReactFlowProvider,
+  Background,
+  BackgroundVariant,
+  useNodesState,
+  type Node,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
-import { TrackerWidget } from "../../widget/components/TrackerWidget";
+import type { WidgetKind } from "@/features/widget/types/widget.types";
 import { WidgetPalette } from "../../widget/components/WidgetPalette";
-import { portfolioService } from "@/features/portfolio/services/portfolio.service";
-import { PortfolioSummaryBar } from "./PortfolioSummaryBar";
+import { useCanvasWidgets } from "../hooks/useCanvasWidgets";
+import { useCanvasRightClickPan } from "../hooks/useCanvasPan";
+import { CanvasZoomControls } from "./CanvasZoomControls";
+import { WidgetNode } from "./WidgetNode";
+import {
+  COL_WIDTH,
+  ROW_HEIGHT,
+  findNearestFreePosition,
+  type Rect,
+} from "../utils/canvasCollision";
 
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-import type { PortfolioSummary } from "@/features/portfolio/types/portfolio.types";
-
-const ResponsiveReactGridLayout = WidthProvider(Responsive) as any;
+const nodeTypes = {
+  widgetNode: WidgetNode,
+};
 
 interface FinancialCanvasProps {
   portfolioId: string | null;
 }
 
-export function FinancialCanvas({ portfolioId }: FinancialCanvasProps) {
-  const [widgets, setWidgets] = useState<Widget[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [summary, setSummary] = useState<PortfolioSummary | null>(null);
-  const [loadingSummary, setLoadingSummary] = useState(false);
+function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
+  useCanvasRightClickPan();
+
+  const {
+    widgets,
+    loading,
+    summary,
+    loadingSummary,
+    addWidget,
+    deleteWidget,
+    saveLayout,
+  } = useCanvasWidgets(portfolioId);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
 
   useEffect(() => {
-    if (!portfolioId) return;
-    loadWidgets();
-    loadSummary();
-  }, [portfolioId]);
-
-   async function loadSummary() {
-    if (!portfolioId) return;
-    try {
-      setLoadingSummary(true);
-      const data = await portfolioService.getSummary(portfolioId);
-      setSummary(data);
-    } catch (error) {
-      console.error("Error loading summary:", error);
-    } finally {
-      setLoadingSummary(false);
+    if (!widgets || widgets.length === 0) {
+      setNodes([]);
+      return;
     }
-  }
 
-  async function loadWidgets() {
-    if (!portfolioId) return;
-    try {
-      setLoading(true);
-      const data = await widgetService.getByPortfolio(portfolioId);
-      setWidgets(data);
-    } catch (error) {
-      console.error("Error loading widgets:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleAddWidget(kind: WidgetKind) {
-    if (!portfolioId) return;
-
-    const defaultNames: Record<WidgetKind, string> = {
-      tracker: "Expense Tracker",
-      saving_goal: "House Savings Goal",
-      recurring_expense: "Monthly Subscriptions",
-    };
-
-    try {
-      const newWidget = await widgetService.create(portfolioId, {
-        kind,
-        name: defaultNames[kind] || "New Widget",
-        description: "Click options to customize",
-      });
-
-      setWidgets((prev) => [...prev, newWidget]);
-    } catch (error) {
-      console.error("Error creating widget:", error);
-    }
-  }
-
-  async function handleDeleteWidget(widgetId: string) {
-    if (!portfolioId) return;
-    try {
-      await widgetService.delete(portfolioId, widgetId);
-      setWidgets((prev) => prev.filter((w) => w.id !== widgetId));
-    } catch (error) {
-      console.error("Error deleting widget:", error);
-    }
-  }
-
-  async function handleLayoutChange(currentLayout: LayoutItem[]) {
-    if (!portfolioId || widgets.length === 0) return;
-
-    const updates: UpdateWidgetLayoutItem[] = currentLayout.map((item) => ({
-      id: item.i,
-      posX: item.x,
-      posY: item.y,
-      width: item.w,
-      height: item.h,
+    const formattedNodes: Node[] = widgets.map((widget) => ({
+      id: widget.id,
+      type: "widgetNode",
+      position: {
+        x: widget.posX * COL_WIDTH,
+        y: widget.posY * ROW_HEIGHT,
+      },
+      dragHandle: ".drag-handle",
+      data: {
+        widget,
+        portfolioId: portfolioId || "",
+        widgets,
+        summary,
+        loadingSummary,
+        onDeleteWidget: deleteWidget,
+      },
+      style: {
+        width: (widget.width || 4) * COL_WIDTH - 16,
+        height: (widget.height || 4) * ROW_HEIGHT - 16,
+      },
     }));
 
-    try {
-      await widgetService.updateLayout(portfolioId, updates);
-    } catch (error) {
-      console.error("Error saving layout:", error);
-    }
-  }
+    setNodes(formattedNodes);
+  }, [widgets, portfolioId, setNodes]);
 
-  const layoutItems = widgets.map((w) => ({
-    i: w.id,
-    x: w.posX,
-    y: w.posY,
-    w: w.width > 12 ? 4 : w.width || 4,
-    h: w.height > 20 ? 4 : w.height || 4,
-    minW: 3,
-    minH: 3,
-  }));
+  const handleNodeDragStop = useCallback(
+    (_: any, node: Node) => {
+      const rawX = Math.round(node.position.x / COL_WIDTH);
+      const rawY = Math.round(node.position.y / ROW_HEIGHT);
+      const gridW = Math.max(3, Math.round(((node.measured?.width || 400) + 16) / COL_WIDTH));
+      const gridH = Math.max(2, Math.round(((node.measured?.height || 300) + 16) / ROW_HEIGHT));
 
-  function renderWidgetContent(widget: Widget) {
-    if (!portfolioId) return null;
+      const otherRects: Rect[] = nodes.map((n) => {
+        const w = Math.max(3, Math.round(((n.measured?.width || 400) + 16) / COL_WIDTH));
+        const h = Math.max(2, Math.round(((n.measured?.height || 300) + 16) / ROW_HEIGHT));
+        return {
+          id: n.id,
+          x: Math.round(n.position.x / COL_WIDTH),
+          y: Math.round(n.position.y / ROW_HEIGHT),
+          w,
+          h,
+        };
+      });
 
-    switch (widget.kind) {
-      case "tracker":
-        return (
-          <TrackerWidget
-            portfolioId={portfolioId}
-            widgetId={widget.id}
-            name={widget.name}
-            description={widget.description}
-            onDeleteWidget={() => handleDeleteWidget(widget.id)}
-          />
-        );
+      const candidateRect: Rect = {
+        id: node.id,
+        x: rawX,
+        y: rawY,
+        w: gridW,
+        h: gridH,
+      };
 
-      default:
-        return (
-          <div className="p-4 bg-card border rounded-lg h-full flex items-center justify-center">
-            <span className="text-xs text-muted-foreground">
-              Widget coming soon
-            </span>
-          </div>
-        );
-    }
+      const { x: freeX, y: freeY } = findNearestFreePosition(node.id, candidateRect, otherRects);
+
+      setNodes((prevNodes) =>
+        prevNodes.map((n) => {
+          if (n.id === node.id) {
+            return {
+              ...n,
+              position: {
+                x: freeX * COL_WIDTH,
+                y: freeY * ROW_HEIGHT,
+              },
+            };
+          }
+          return n;
+        })
+      );
+
+      saveLayout([
+        {
+          i: node.id,
+          x: freeX,
+          y: freeY,
+          w: gridW,
+          h: gridH,
+        },
+      ]);
+    },
+    [nodes, setNodes, saveLayout]
+  );
+
+  function handleAddWidget(kind: WidgetKind) {
+    addWidget(kind);
   }
 
   return (
-    <div className="w-full min-h-screen bg-background relative p-8">
-      <PortfolioSummaryBar summary={summary} loading={loadingSummary} />
+    <div className="w-full h-full overflow-hidden bg-background relative select-none">
+      <CanvasZoomControls />
+
       {loading ? (
-        <div className="flex items-center justify-center h-64 text-sm text-muted-foreground">
+        <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
           Loading Canvas...
         </div>
       ) : widgets.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-xl p-8 text-center text-muted-foreground">
+        <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-xl p-8 text-center text-muted-foreground bg-card/50 backdrop-blur max-w-md mx-auto mt-20">
           <p className="text-sm font-medium">This portfolio canvas is empty.</p>
-          <p className="text-xs">
-            Add a widget from the palette below to start.
-          </p>
+          <p className="text-xs">Add a widget from the palette below to start.</p>
         </div>
       ) : (
-        <ResponsiveReactGridLayout
-          className="layout"
-          layouts={{
-            lg: layoutItems,
-            md: layoutItems,
-            sm: layoutItems,
-          }}
-          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-          cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-          rowHeight={100}
-          isDraggable={true}
-          isResizable={true}
-          draggableHandle=".drag-handle"
-          margin={[16, 16]}
-          onDragStop={handleLayoutChange}
-          onResizeStop={handleLayoutChange}
-        >
-          {widgets.map((widget) => (
-            <div key={widget.id} className="h-full">
-              {renderWidgetContent(widget)}
-            </div>
-          ))}
-        </ResponsiveReactGridLayout>
+        <div className="w-full h-full">
+          <ReactFlow
+            nodes={nodes}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            onNodeDragStop={handleNodeDragStop}
+            snapToGrid={true}
+            snapGrid={[16, 16]}
+            zoomOnScroll={true}
+            panOnScroll={false}
+            panOnDrag={false}
+            minZoom={0.2}
+            maxZoom={2}
+            defaultViewport={{ x: 50, y: 50, zoom: 1 }}
+            className="bg-background"
+          >
+            <Background variant={BackgroundVariant.Dots} gap={24} size={1} />
+          </ReactFlow>
+        </div>
       )}
 
       <WidgetPalette onAddWidget={handleAddWidget} />
     </div>
+  );
+}
+
+export function FinancialCanvas(props: FinancialCanvasProps) {
+  return (
+    <ReactFlowProvider>
+      <FinancialCanvasInner {...props} />
+    </ReactFlowProvider>
   );
 }

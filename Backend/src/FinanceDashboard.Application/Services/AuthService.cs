@@ -58,6 +58,18 @@ public class AuthService : IAuthService
 
         _context.Portfolios.Add(defaultPortfolio);
 
+        var defaultSummaryWidget = Widget.CreateSummary(
+            portfolioId: defaultPortfolio.Id,
+            name: "Portfolio Summary",
+            description: "Overall portfolio financial balance",
+            posX: 0,
+            posY: 0,
+            width: 12,
+            height: 2
+        );
+
+        _context.Widgets.Add(defaultSummaryWidget);
+
         await _context.SaveChangesAsync();
 
         var token = _jwtTokenGenerator.GenerateToken(user);
@@ -123,11 +135,23 @@ public class AuthService : IAuthService
             var defaultPortfolio = new Portfolio(
                 userId: user.Id,
                 title: "First portfolio",
-                description: "Started porfolio",
+                description: "Started portfolio",
                 createdBy: googleUser.FirstName
             );
 
             _context.Portfolios.Add(defaultPortfolio);
+
+            var defaultSummaryWidget = Widget.CreateSummary(
+                portfolioId: defaultPortfolio.Id,
+                name: "Portfolio Summary",
+                description: "Overall portfolio financial balance",
+                posX: 0,
+                posY: 0,
+                width: 12,
+                height: 2
+            );
+
+            _context.Widgets.Add(defaultSummaryWidget);
 
             await _context.SaveChangesAsync();
         }
