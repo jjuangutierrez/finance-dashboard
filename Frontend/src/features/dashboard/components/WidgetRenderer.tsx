@@ -11,6 +11,8 @@ interface WidgetRendererProps {
   summary: PortfolioSummary | null;
   loadingSummary: boolean;
   onDeleteWidget: (widgetId: string) => void;
+  onUpdateWidget?: (widgetId: string, data: { name?: string; description?: string }) => void;
+  
 }
 
 export function WidgetRenderer({
@@ -20,6 +22,7 @@ export function WidgetRenderer({
   summary,
   loadingSummary,
   onDeleteWidget,
+  onUpdateWidget,
 }: WidgetRendererProps) {
   switch (widget.kind) {
     case "summary":
@@ -33,6 +36,7 @@ export function WidgetRenderer({
           loading={loadingSummary}
           widgets={widgets}
           onDeleteWidget={() => onDeleteWidget(widget.id)}
+          onUpdateWidget={(data) => onUpdateWidget?.(widget.id, data)}
         />
       );
 
@@ -44,6 +48,7 @@ export function WidgetRenderer({
           name={widget.name}
           description={widget.description}
           onDeleteWidget={() => onDeleteWidget(widget.id)}
+          onUpdateWidget={(data) => onUpdateWidget?.(widget.id, data)}
         />
       );
 

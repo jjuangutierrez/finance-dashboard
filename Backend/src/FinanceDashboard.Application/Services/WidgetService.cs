@@ -93,6 +93,26 @@ public class WidgetService
         return widget;
     }
 
+    public async Task UpdateWidgetAsync(Guid portfolioId, Guid widgetId, UpdateWidgetRequest request)
+    {
+        var userId = _currentUser.UserId
+            ?? throw new UnauthorizedAccessException("User is not authenticated.");
+
+        var widget = await _context.Widgets
+            .Include(w => w.Portfolio)
+            .FirstOrDefaultAsync(w => w.Id == widgetId && w.PortfolioId == portfolioId && w.Portfolio.UserId == userId);
+
+        if (widget is null)
+            throw new KeyNotFoundException("Widget not found or access denied.");
+
+        widget.UpdateDetails(
+            request.Name ?? widget.Name,
+            request.Description ?? widget.Description
+        );
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task UpdateLayoutAsync(Guid portfolioId, List<UpdateWidgetLayoutRequest> requests)
     {
         var userId = _currentUser.UserId

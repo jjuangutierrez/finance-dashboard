@@ -93,6 +93,16 @@ public class WidgetsController : ControllerBase
         }
     }
 
+    [HttpPut("{widgetId}")]
+    public async Task<IActionResult> UpdateWidget(
+    Guid portfolioId,
+    Guid widgetId,
+    [FromBody] UpdateWidgetRequest request)
+    {
+        await _widgetService.UpdateWidgetAsync(portfolioId, widgetId, request);
+        return NoContent();
+    }
+
     [HttpDelete("{widgetId:guid}")]
     public async Task<IActionResult> DeleteWidget(Guid portfolioId, Guid widgetId)
     {

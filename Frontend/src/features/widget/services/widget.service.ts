@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import type { Widget, CreateWidgetRequest, UpdateWidgetLayoutItem } from "../types/widget.types";
+import type { Widget, CreateWidgetRequest, UpdateWidgetLayoutItem, UpdateWidgetRequest } from "../types/widget.types";
 
 export const widgetService = {
   async getByPortfolio(portfolioId: string): Promise<Widget[]> {
@@ -14,6 +14,14 @@ export const widgetService = {
 
   async updateLayout(portfolioId: string, items: UpdateWidgetLayoutItem[]): Promise<void> {
     await api.patch(`/portfolios/${portfolioId}/widgets/layout`, items);
+  },
+
+  async update(
+    portfolioId: string,
+    widgetId: string,
+    data: UpdateWidgetRequest
+  ): Promise<void> {
+    await api.put(`/portfolios/${portfolioId}/widgets/${widgetId}`, data);
   },
 
   async delete(portfolioId: string, widgetId: string): Promise<void> {

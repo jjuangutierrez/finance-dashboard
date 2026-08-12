@@ -6,6 +6,7 @@ import {
   ArrowDownRight,
   Wallet,
   GripHorizontal,
+  Pencil,
 } from "lucide-react";
 import {
   Card,
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 import { transactionService } from "@/features/transactions/services/transaction.service";
 import { CreateTransactionDialog } from "@/features/transactions/components/CreateTransactionDialog";
@@ -28,6 +30,7 @@ interface TrackerWidgetProps {
   name: string;
   description?: string;
   onDeleteWidget?: () => void;
+  onUpdateWidget?: (data: { name?: string; description?: string }) => void;
 }
 
 export function TrackerWidget({
@@ -35,11 +38,19 @@ export function TrackerWidget({
   widgetId,
   name,
   description,
-  onDeleteWidget, 
+  onDeleteWidget,
+  onUpdateWidget,
 }: TrackerWidgetProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
+
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleValue, setTitleValue] = useState(name);
+
+  useEffect(() => {
+    setTitleValue(name);
+  }, [name]);
 
   useEffect(() => {
     loadTransactions();
@@ -66,6 +77,16 @@ export function TrackerWidget({
     }
   }
 
+  const handleSaveTitle = () => {
+    setIsEditingTitle(false);
+    const trimmed = titleValue.trim();
+    if (trimmed && trimmed !== name) {
+      onUpdateWidget?.({ name: trimmed });
+    } else {
+      setTitleValue(name);
+    }
+  };
+
   const totalIncome = transactions
     .filter((t) => t.type === "income")
     .reduce((acc, t) => acc + t.amount, 0);
@@ -86,22 +107,49 @@ export function TrackerWidget({
   return (
     <>
       <Card className="h-full flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
-        {/* Header del Widget */}
         <CardHeader className="pb-2 flex flex-row items-start justify-between space-y-0">
-          <div className="flex items-center gap-2">
-            {/* 🟢 Manija de Arrastre */}
+          <div className="flex items-center gap-2 min-w-0">
             <div
-              className="drag-handle cursor-grab active:cursor-grabbing p-1 -ml-1 text-muted-foreground hover:text-foreground rounded transition-colors"
+              className="drag-handle cursor-grab active:cursor-grabbing p-1 -ml-1 text-muted-foreground hover:text-foreground rounded transition-colors shrink-0"
               title="Drag to move"
             >
               <GripHorizontal className="h-4 w-4" />
             </div>
 
-            <div>
-              <CardTitle className="text-base font-semibold flex items-center gap-1.5">
-                <Wallet className="h-4 w-4 text-primary" />
-                {name}
+            <div className="min-w-0 flex-1">
+              <CardTitle className="text-base font-semibold flex items-center gap-1.5 h-7">
+                <Wallet className="h-4 w-4 text-primary shrink-0" />
+
+                {/* ✏️ Edición en línea o Nombre estático */}
+                {isEditingTitle ? (
+                  <Input
+                    value={titleValue}
+                    onChange={(e) => setTitleValue(e.target.value)}
+                    onBlur={handleSaveTitle}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveTitle();
+                      if (e.key === "Escape") {
+                        setTitleValue(name);
+                        setIsEditingTitle(false);
+                      }
+                    }}
+                    className="h-7 text-xs font-semibold px-2 py-0 w-44"
+                    autoFocus
+                  />
+                ) : (
+                  <span
+                    onClick={() => onUpdateWidget && setIsEditingTitle(true)}
+                    className="cursor-pointer hover:underline flex items-center gap-1.5 truncate group"
+                    title="Click to rename"
+                  >
+                    <span className="truncate">{name}</span>
+                    {onUpdateWidget && (
+                      <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 text-muted-foreground transition-opacity shrink-0" />
+                    )}
+                  </span>
+                )}
               </CardTitle>
+
               {description && (
                 <CardDescription className="text-xs truncate max-w-[180px]">
                   {description}
@@ -121,11 +169,23 @@ export function TrackerWidget({
               Add
             </Button>
 
+            {onUpdateWidget && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer"
+                onClick={() => setIsEditingTitle((prev) => !prev)}
+                title="Rename widget"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+            )}
+
             {onDeleteWidget && (
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-muted-foreground hover:text-red-600"
+                className="h-7 w-7 text-muted-foreground hover:text-red-600 cursor-pointer"
                 onClick={onDeleteWidget}
                 title="Delete widget"
               >
@@ -167,10 +227,8 @@ export function TrackerWidget({
             </div>
           </div>
 
-          {/* Gráfico de Barras / Donut */}
           <TrackerChart data={chartData} />
 
-          {/* Lista comprimida de Transacciones recientes */}
           <div className="space-y-1 pt-2">
             <span className="text-[11px] font-semibold text-muted-foreground block mb-1">
               Transactions ({transactions.length})
@@ -213,7 +271,7 @@ export function TrackerWidget({
 
                       <button
                         onClick={() => handleDeleteTx(tx.id)}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-600 transition-opacity"
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-600 transition-opacity cursor-pointer"
                         title="Delete transaction"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -227,7 +285,6 @@ export function TrackerWidget({
         </CardContent>
       </Card>
 
-      {/* Modal para agregar nueva transacción */}
       <CreateTransactionDialog
         isOpen={isTxModalOpen}
         onClose={() => setIsTxModalOpen(false)}

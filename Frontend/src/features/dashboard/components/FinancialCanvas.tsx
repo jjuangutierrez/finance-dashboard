@@ -6,6 +6,7 @@ import {
   BackgroundVariant,
   useNodesState,
   type Node,
+  type ResizeParams,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -33,6 +34,7 @@ interface FinancialCanvasProps {
 function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
   useCanvasRightClickPan();
 
+  // ✏️ CORREGIDO: Se agregó updateWidget aquí
   const {
     widgets,
     loading,
@@ -40,10 +42,73 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
     loadingSummary,
     addWidget,
     deleteWidget,
+    updateWidget,
     saveLayout,
   } = useCanvasWidgets(portfolioId);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+
+  const handleNodeResizeStop = useCallback(
+    (nodeId: string, params: ResizeParams) => {
+      const rawX = Math.round(params.x / COL_WIDTH);
+      const rawY = Math.round(params.y / ROW_HEIGHT);
+      const gridW = Math.max(3, Math.round((params.width + 16) / COL_WIDTH));
+      const gridH = Math.max(2, Math.round((params.height + 16) / ROW_HEIGHT));
+
+      setNodes((prevNodes) => {
+        const otherRects: Rect[] = prevNodes
+          .filter((n) => n.id !== nodeId)
+          .map((n) => {
+            const w = Math.max(
+              3,
+              Math.round(((n.measured?.width || 400) + 16) / COL_WIDTH),
+            );
+            const h = Math.max(
+              2,
+              Math.round(((n.measured?.height || 300) + 16) / ROW_HEIGHT),
+            );
+            return {
+              id: n.id,
+              x: Math.round(n.position.x / COL_WIDTH),
+              y: Math.round(n.position.y / ROW_HEIGHT),
+              w,
+              h,
+            };
+          });
+
+        const candidateRect: Rect = {
+          id: nodeId,
+          x: rawX,
+          y: rawY,
+          w: gridW,
+          h: gridH,
+        };
+
+        const { x: freeX, y: freeY } = findNearestFreePosition(
+          nodeId,
+          candidateRect,
+          otherRects,
+        );
+
+        saveLayout([{ i: nodeId, x: freeX, y: freeY, w: gridW, h: gridH }]);
+
+        return prevNodes.map((n) =>
+          n.id === nodeId
+            ? {
+                ...n,
+                position: { x: freeX * COL_WIDTH, y: freeY * ROW_HEIGHT },
+                style: {
+                  ...n.style,
+                  width: gridW * COL_WIDTH - 16,
+                  height: gridH * ROW_HEIGHT - 16,
+                },
+              }
+            : n,
+        );
+      });
+    },
+    [setNodes, saveLayout],
+  );
 
   useEffect(() => {
     if (!widgets || widgets.length === 0) {
@@ -66,6 +131,8 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
         summary,
         loadingSummary,
         onDeleteWidget: deleteWidget,
+        onUpdateWidget: updateWidget,
+        onResizeWidget: handleNodeResizeStop,
       },
       style: {
         width: (widget.width || 4) * COL_WIDTH - 16,
@@ -74,18 +141,39 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
     }));
 
     setNodes(formattedNodes);
-  }, [widgets, portfolioId, setNodes]);
+  }, [
+    widgets,
+    portfolioId,
+    summary,
+    loadingSummary,
+    setNodes,
+    handleNodeResizeStop,
+    deleteWidget,
+    updateWidget, // ✏️ CORREGIDO: Se agregó aquí también
+  ]);
 
   const handleNodeDragStop = useCallback(
     (_: any, node: Node) => {
       const rawX = Math.round(node.position.x / COL_WIDTH);
       const rawY = Math.round(node.position.y / ROW_HEIGHT);
-      const gridW = Math.max(3, Math.round(((node.measured?.width || 400) + 16) / COL_WIDTH));
-      const gridH = Math.max(2, Math.round(((node.measured?.height || 300) + 16) / ROW_HEIGHT));
+      const gridW = Math.max(
+        3,
+        Math.round(((node.measured?.width || 400) + 16) / COL_WIDTH),
+      );
+      const gridH = Math.max(
+        2,
+        Math.round(((node.measured?.height || 300) + 16) / ROW_HEIGHT),
+      );
 
       const otherRects: Rect[] = nodes.map((n) => {
-        const w = Math.max(3, Math.round(((n.measured?.width || 400) + 16) / COL_WIDTH));
-        const h = Math.max(2, Math.round(((n.measured?.height || 300) + 16) / ROW_HEIGHT));
+        const w = Math.max(
+          3,
+          Math.round(((n.measured?.width || 400) + 16) / COL_WIDTH),
+        );
+        const h = Math.max(
+          2,
+          Math.round(((n.measured?.height || 300) + 16) / ROW_HEIGHT),
+        );
         return {
           id: n.id,
           x: Math.round(n.position.x / COL_WIDTH),
@@ -103,7 +191,11 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
         h: gridH,
       };
 
-      const { x: freeX, y: freeY } = findNearestFreePosition(node.id, candidateRect, otherRects);
+      const { x: freeX, y: freeY } = findNearestFreePosition(
+        node.id,
+        candidateRect,
+        otherRects,
+      );
 
       setNodes((prevNodes) =>
         prevNodes.map((n) => {
@@ -117,7 +209,7 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
             };
           }
           return n;
-        })
+        }),
       );
 
       saveLayout([
@@ -130,7 +222,7 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
         },
       ]);
     },
-    [nodes, setNodes, saveLayout]
+    [nodes, setNodes, saveLayout],
   );
 
   function handleAddWidget(kind: WidgetKind) {
@@ -148,7 +240,9 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
       ) : widgets.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-xl p-8 text-center text-muted-foreground bg-card/50 backdrop-blur max-w-md mx-auto mt-20">
           <p className="text-sm font-medium">This portfolio canvas is empty.</p>
-          <p className="text-xs">Add a widget from the palette below to start.</p>
+          <p className="text-xs">
+            Add a widget from the palette below to start.
+          </p>
         </div>
       ) : (
         <div className="w-full h-full">

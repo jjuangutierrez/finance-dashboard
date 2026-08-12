@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Wallet,
   GripHorizontal,
-  Trash2,
   ListFilter,
   ArrowUpRight,
   ArrowDownRight,
@@ -29,17 +28,18 @@ interface SummaryWidgetProps {
   loading: boolean;
   widgets?: Widget[];
   onDeleteWidget?: () => void;
+  onUpdateWidget?: (data: { name?: string; description?: string }) => void;
 }
 
 export function SummaryWidget({
   portfolioId,
-  widgetId,
   name,
   description,
   summary,
   loading,
   widgets = [],
   onDeleteWidget,
+  onUpdateWidget,
 }: SummaryWidgetProps) {
   const [isAllTxModalOpen, setIsAllTxModalOpen] = useState(false);
 
@@ -78,18 +78,6 @@ export function SummaryWidget({
               <ListFilter className="h-3.5 w-3.5" />
               View All
             </Button>
-
-            {onDeleteWidget && (
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-muted-foreground hover:text-red-600"
-                onClick={onDeleteWidget}
-                title="Delete widget"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            )}
           </div>
         </CardHeader>
 
@@ -100,7 +88,6 @@ export function SummaryWidget({
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-muted/30 p-3 rounded-lg border">
-              {/* Balance Neto */}
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-md bg-primary/10 text-primary shrink-0">
                   <Wallet className="h-4 w-4" />
@@ -119,6 +106,7 @@ export function SummaryWidget({
                 </div>
               </div>
 
+              {/* Total Income */}
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-md bg-emerald-500/10 text-emerald-500 shrink-0">
                   <ArrowUpRight className="h-4 w-4" />
@@ -133,7 +121,7 @@ export function SummaryWidget({
                 </div>
               </div>
 
-              {/* Gastos */}
+              {/* Total Expenses */}
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-md bg-red-500/10 text-red-500 shrink-0">
                   <ArrowDownRight className="h-4 w-4" />
@@ -148,6 +136,7 @@ export function SummaryWidget({
                 </div>
               </div>
 
+              {/* Activity */}
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-md bg-muted text-muted-foreground shrink-0">
                   <Receipt className="h-4 w-4" />

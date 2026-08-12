@@ -38,3 +38,10 @@ export interface UpdateWidgetLayoutItem {
   width: number;
   height: number;
 }
+
+export interface UpdateWidgetRequest {
+  name?: string;
+  description?: string;
+  targetAmount?: number;
+  targetDate?: string;
+}

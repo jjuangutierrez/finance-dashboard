@@ -8,6 +8,7 @@ import type {
 } from "@/features/widget/types/widget.types";
 import { portfolioService } from "@/features/portfolio/services/portfolio.service";
 import type { PortfolioSummary } from "@/features/portfolio/types/portfolio.types";
+import { findNearestFreePosition, type Rect } from "../utils/canvasCollision";
 
 const DEFAULT_WIDGET_NAMES: Record<WidgetKind, string> = {
   summary: "Portfolio Summary",
@@ -16,7 +17,16 @@ const DEFAULT_WIDGET_NAMES: Record<WidgetKind, string> = {
   recurring_expense: "Monthly Subscriptions",
 };
 
-// Definimos nuestra propia interfaz nativa sin depender de la librería antigua
+const DEFAULT_WIDGET_SIZES: Record<
+  WidgetKind,
+  { width: number; height: number }
+> = {
+  summary: { width: 7, height: 2 },
+  tracker: { width: 3, height: 4 },
+  saving_goal: { width: 4, height: 3 },
+  recurring_expense: { width: 4, height: 3 },
+};
+
 export interface CanvasLayoutItem {
   i: string;
   x: number;
@@ -73,12 +83,60 @@ export function useCanvasWidgets(portfolioId: string | null) {
           name: DEFAULT_WIDGET_NAMES[kind] || "New Widget",
           description: "Click options to customize",
         });
-        setWidgets((prev) => [...prev, newWidget]);
+
+        const defaultSize = DEFAULT_WIDGET_SIZES[kind] || {
+          width: 6,
+          height: 2,
+        };
+        const width = defaultSize.width;
+        const height = defaultSize.height;
+
+        const otherRects: Rect[] = widgets.map((w) => ({
+          id: w.id,
+          x: w.posX,
+          y: w.posY,
+          w: w.width || (DEFAULT_WIDGET_SIZES[w.kind]?.width ?? 6),
+          h: w.height || (DEFAULT_WIDGET_SIZES[w.kind]?.height ?? 2),
+        }));
+
+        const candidateRect: Rect = {
+          id: newWidget.id,
+          x: newWidget.posX ?? 0,
+          y: newWidget.posY ?? 0,
+          w: width,
+          h: height,
+        };
+
+        const { x: freeX, y: freeY } = findNearestFreePosition(
+          newWidget.id,
+          candidateRect,
+          otherRects,
+        );
+
+        const placedWidget: Widget = {
+          ...newWidget,
+          posX: freeX,
+          posY: freeY,
+          width,
+          height,
+        };
+
+        setWidgets((prev) => [...prev, placedWidget]);
+
+        await widgetService.updateLayout(portfolioId, [
+          {
+            id: placedWidget.id,
+            posX: freeX,
+            posY: freeY,
+            width,
+            height,
+          },
+        ]);
       } catch (error) {
         console.error("Error creating widget:", error);
       }
     },
-    [portfolioId]
+    [portfolioId, widgets],
   );
 
   const deleteWidget = useCallback(
@@ -91,7 +149,25 @@ export function useCanvasWidgets(portfolioId: string | null) {
         console.error("Error deleting widget:", error);
       }
     },
-    [portfolioId]
+    [portfolioId],
+  );
+
+  const updateWidget = useCallback(
+    async (widgetId: string, data: { name?: string; description?: string }) => {
+      if (!portfolioId) return;
+
+      setWidgets((prev) =>
+        prev.map((w) => (w.id === widgetId ? { ...w, ...data } : w)),
+      );
+
+      try {
+        await widgetService.update(portfolioId, widgetId, data);
+      } catch (error) {
+        console.error("Error updating widget:", error);
+        loadWidgets();
+      }
+    },
+    [portfolioId],
   );
 
   const saveLayout = useCallback(
@@ -109,7 +185,7 @@ export function useCanvasWidgets(portfolioId: string | null) {
             width: updated.w,
             height: updated.h,
           };
-        })
+        }),
       );
 
       const updates: UpdateWidgetLayoutItem[] = currentLayout.map((item) => ({
@@ -126,9 +202,10 @@ export function useCanvasWidgets(portfolioId: string | null) {
         console.error("Error saving layout:", error);
       }
     },
-    [portfolioId, widgets.length]
+    [portfolioId, widgets.length],
   );
 
+  // 🔴 ¡AQUÍ SOLO DEBE HABER UN RETURN AL FINAL!
   return {
     widgets,
     loading,
@@ -136,6 +213,7 @@ export function useCanvasWidgets(portfolioId: string | null) {
     loadingSummary,
     addWidget,
     deleteWidget,
+    updateWidget,
     saveLayout,
   };
 }

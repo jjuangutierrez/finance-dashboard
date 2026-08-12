@@ -52,7 +52,7 @@ public class PortfolioService : IPortfolioService
             description: "Overall portfolio financial balance",
             posX: 0,
             posY: 0,
-            width: 12,
+            width: 6,
             height: 2
         );
 
