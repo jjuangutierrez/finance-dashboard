@@ -1,4 +1,4 @@
-import { MoreHorizontal, Pencil, Trash2, Folder } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Folder, Plus } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -14,7 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus } from "lucide-react";
 import type { Portfolio } from "@/features/portfolio/types/portfolio.types";
 
 interface PortfolioListProps {
@@ -47,21 +46,24 @@ export function PortfolioList({
 
       <SidebarMenu>
         {loading ? (
-          <div className="px-2 py-1 text-xs text-muted-foreground">Loading...</div>
+          <div className="px-2 py-1 text-xs text-muted-foreground">
+            Loading...
+          </div>
         ) : (
           portfolios.map((portfolio) => (
             <SidebarMenuItem key={portfolio.id}>
               <SidebarMenuButton
                 isActive={portfolio.id === selectedPortfolioId}
                 onClick={() => onSelectPortfolio(portfolio.id)}
+                tooltip={portfolio.title}
                 className="cursor-pointer"
               >
-                <Folder className="h-4 w-4" />
+                <Folder className="h-4 w-4 shrink-0" />
                 <span className="truncate">{portfolio.title}</span>
               </SidebarMenuButton>
 
               <DropdownMenu>
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger className="group-data-[collapsible=icon]:hidden">
                   <SidebarMenuAction showOnHover>
                     <MoreHorizontal className="h-4 w-4" />
                     <span className="sr-only">More</span>
@@ -69,7 +71,10 @@ export function PortfolioList({
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end" side="right" className="w-40">
-                  <DropdownMenuItem onClick={() => onRename(portfolio)} className="cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={() => onRename(portfolio)}
+                    className="cursor-pointer"
+                  >
                     <Pencil className="mr-2 h-4 w-4" />
                     <span>Rename</span>
                   </DropdownMenuItem>

@@ -42,3 +42,6 @@ coverage/
 
 # JetBrains
 *.iml
+
+**/appsettings.Development.json
+**/appsettings.Local.json

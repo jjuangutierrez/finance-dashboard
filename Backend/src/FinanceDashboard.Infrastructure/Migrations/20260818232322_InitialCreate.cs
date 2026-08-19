@@ -23,6 +23,8 @@ namespace FinanceDashboard.Infrastructure.Migrations
                     password_hash = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                     google_id = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                     PictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
                     created_by = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                     last_modified_at = table.Column<DateTime>(type: "datetime2", nullable: true),

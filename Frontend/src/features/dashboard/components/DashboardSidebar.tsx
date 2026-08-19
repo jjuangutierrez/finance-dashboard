@@ -16,14 +16,25 @@ import { AccountMenu } from "./AccountMenu";
 import type { DashboardSidebarProps } from "../interfaces/DashboardSidebarProps";
 import type { Portfolio } from "@/features/portfolio/types/portfolio.types";
 
-export function DashboardSidebar({ selectedPortfolioId, onSelectPortfolio }: DashboardSidebarProps) {
-  const { portfolios, loading, createPortfolio, renamePortfolio, deletePortfolio } = usePortfolios({
+export function DashboardSidebar({
+  selectedPortfolioId,
+  onSelectPortfolio,
+}: DashboardSidebarProps) {
+  const {
+    portfolios,
+    loading,
+    createPortfolio,
+    renamePortfolio,
+    deletePortfolio,
+  } = usePortfolios({
     selectedPortfolioId,
     onSelectPortfolio,
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPortfolio, setEditingPortfolio] = useState<Portfolio | null>(null);
+  const [editingPortfolio, setEditingPortfolio] = useState<Portfolio | null>(
+    null,
+  );
 
   function handleOpenCreateModal() {
     setEditingPortfolio(null);
@@ -50,20 +61,27 @@ export function DashboardSidebar({ selectedPortfolioId, onSelectPortfolio }: Das
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent"
+              >
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <Wallet className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Finance Dashboard</span>
-                  <span className="truncate text-xs text-muted-foreground">Personal</span>
+                  <span className="truncate font-semibold">
+                    Finance Dashboard
+                  </span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    Personal
+                  </span>
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarContent className="p-2">
+        <SidebarContent className="p-2 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-2">
           <PortfolioList
             portfolios={portfolios}
             loading={loading}

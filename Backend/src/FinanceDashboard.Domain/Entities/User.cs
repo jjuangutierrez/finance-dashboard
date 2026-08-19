@@ -15,6 +15,9 @@ public class User : AuditableEntity
 
     public ICollection<Portfolio> Portfolios { get; private set; } = new List<Portfolio>();
 
+    public string? RefreshToken { get; private set; }
+    public DateTime? RefreshTokenExpiryTime { get; private set; }
+
     private User() { }
 
     public User(string firstName, string? lastName, string userName, string email, string passwordHash)
@@ -81,5 +84,17 @@ public class User : AuditableEntity
         Guard.AgainstMaxLength(firstName, 50, nameof(firstName));
         Guard.AgainstMaxLength(lastName, 150, nameof(lastName));
         Guard.AgainstMaxLength(userName, 150, nameof(userName));
+    }
+
+    public void UpdateRefreshToken(string refreshToken, DateTime expiryTime)
+    {
+        RefreshToken = refreshToken;
+        RefreshTokenExpiryTime = expiryTime;
+    }
+
+    public void RevokeRefreshToken()
+    {
+        RefreshToken = null;
+        RefreshTokenExpiryTime = null;
     }
 }

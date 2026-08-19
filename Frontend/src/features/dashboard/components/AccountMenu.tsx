@@ -1,6 +1,6 @@
 import { User, UserCheck, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import authService from "@/features/auth/services/auth.service";
+import { useAuth } from "@/features/auth/context/AuthContext";
 import {
   SidebarFooter,
   SidebarMenu,
@@ -16,6 +16,12 @@ import {
 
 export function AccountMenu() {
   const navigate = useNavigate();
+  const { logout } = useAuth(); 
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
 
   return (
     <SidebarFooter>
@@ -40,10 +46,7 @@ export function AccountMenu() {
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={() => {
-                  authService.logout();
-                  navigate("/");
-                }}
+                onClick={handleLogout}
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
                 <LogOut className="mr-2 h-4 w-4" />

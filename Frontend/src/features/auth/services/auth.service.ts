@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import { tokenStorage } from "@/lib/tokenStorage";
 import { AxiosError } from "axios";
 
 export interface RegisterRequest {
@@ -25,40 +26,65 @@ export interface AuthResult {
   errors: string[];
 }
 
-const TOKEN_KEY = "token";
-
 class AuthService {
   async register(request: RegisterRequest): Promise<AuthResult> {
-    return this.handleAuthRequest("/auth/register", request);
+    const result = await this.handleAuthRequest("/auth/register", request);
+    if (result.success && result.token && result.refreshToken) {
+      tokenStorage.setTokens(result.token, result.refreshToken);
+    }
+    return result;
   }
 
   async login(request: LoginRequest): Promise<AuthResult> {
-    return this.handleAuthRequest("/auth/login", request);
+    const result = await this.handleAuthRequest("/auth/login", request);
+    if (result.success && result.token && result.refreshToken) {
+      tokenStorage.setTokens(result.token, result.refreshToken);
+    }
+    return result;
   }
 
   async loginWithGoogle(idToken: string): Promise<AuthResult> {
-    return this.handleAuthRequest("/auth/google", { idToken });
+    const result = await this.handleAuthRequest("/auth/google", { idToken });
+    if (result.success && result.token && result.refreshToken) {
+      tokenStorage.setTokens(result.token, result.refreshToken);
+    }
+    return result;
   }
 
-  logout() {
-    localStorage.removeItem(TOKEN_KEY);
+  async logout(): Promise<void> {
+    try {
+      const refreshToken = tokenStorage.getRefreshToken();
+
+      if (refreshToken) {
+        await api.post("/auth/logout", { refreshToken });
+      }
+    } catch (error) {
+      console.error("Error al revocar token en el backend:", error);
+    } finally {
+      tokenStorage.clearTokens();
+    }
+  }
+
+  saveToken(token: string, refreshToken?: string): void {
+    if (refreshToken) {
+      tokenStorage.setTokens(token, refreshToken);
+    } else {
+      const currentRefresh = tokenStorage.getRefreshToken() || "";
+      tokenStorage.setTokens(token, currentRefresh);
+    }
   }
 
   getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY);
-  }
-
-  saveToken(token: string) {
-    localStorage.setItem(TOKEN_KEY, token);
+    return tokenStorage.getAccessToken();
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    return tokenStorage.hasTokens();
   }
 
   private async handleAuthRequest(
     url: string,
-    payload: unknown
+    payload: unknown,
   ): Promise<AuthResult> {
     try {
       const { data } = await api.post<AuthResult>(url, payload);

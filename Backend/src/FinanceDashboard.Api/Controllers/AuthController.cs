@@ -1,9 +1,11 @@
 using FinanceDashboard.Application.DTOs.Auth;
 using FinanceDashboard.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace FinanceDashboard.Api.Controllers;
 
+[EnableRateLimiting("auth-limit")]
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
@@ -37,6 +39,13 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(RefreshTokenRequest request)
+    {
+        await _authService.RevokeTokenAsync(request.RefreshToken);
+        return NoContent();
+    }
+
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh(RefreshTokenRequest request)
     {
@@ -54,9 +63,7 @@ public class AuthController : ControllerBase
         var result = await _authService.GoogleAuthAsync(request);
 
         if (!result.Success)
-        {
             return BadRequest(result);
-        }
 
         return Ok(result);
     }

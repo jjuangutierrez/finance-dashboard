@@ -1,28 +1,26 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import authService from "../../auth/services/auth.service";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (token: string) => void;
-  logout: () => void;
+  login: (token: string, refreshToken?: string) => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() =>
+    authService.isAuthenticated()
+  );
 
-  useEffect(() => {
-    setIsAuthenticated(authService.isAuthenticated());
-  }, []);
-
-  const login = (token: string) => {
-    authService.saveToken(token);
+  const login = (token: string, refreshToken?: string) => {
+    authService.saveToken(token, refreshToken);
     setIsAuthenticated(true);
   };
 
-  const logout = () => {
-    authService.logout();
+  const logout = async () => {
+    await authService.logout();
     setIsAuthenticated(false);
   };
 

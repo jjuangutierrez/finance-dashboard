@@ -10,5 +10,6 @@ public record GoogleUserInfo(
     string Email,
     string FirstName,
     string? LastName,
-    string? PictureUrl
+    string? PictureUrl,
+    bool IsEmailVerified
 );

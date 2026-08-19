@@ -5,6 +5,7 @@ import {
   Background,
   BackgroundVariant,
   useNodesState,
+  SelectionMode,
   type Node,
   type ResizeParams,
 } from "@xyflow/react";
@@ -34,7 +35,6 @@ interface FinancialCanvasProps {
 function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
   useCanvasRightClickPan();
 
-  // ✏️ CORREGIDO: Se agregó updateWidget aquí
   const {
     widgets,
     loading,
@@ -149,7 +149,7 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
     setNodes,
     handleNodeResizeStop,
     deleteWidget,
-    updateWidget, // ✏️ CORREGIDO: Se agregó aquí también
+    updateWidget,
   ]);
 
   const handleNodeDragStop = useCallback(
@@ -225,6 +225,33 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
     [nodes, setNodes, saveLayout],
   );
 
+  const handleSelectionDragStop = useCallback(
+  (_: any, selectedNodes: Node[]) => {
+    const layoutUpdates = selectedNodes.map((node) => {
+      const gridX = Math.round(node.position.x / COL_WIDTH);
+      const gridY = Math.round(node.position.y / ROW_HEIGHT);
+      const gridW = Math.max(
+        3,
+        Math.round(((node.measured?.width || 400) + 16) / COL_WIDTH)
+      );
+      const gridH = Math.max(
+        2,
+        Math.round(((node.measured?.height || 300) + 16) / ROW_HEIGHT)
+      );
+      return {
+        i: node.id,
+        x: gridX,
+        y: gridY,
+        w: gridW,
+        h: gridH,
+      };
+    });
+
+    saveLayout(layoutUpdates);
+  },
+  [saveLayout]
+);
+
   function handleAddWidget(kind: WidgetKind) {
     addWidget(kind);
   }
@@ -251,11 +278,14 @@ function FinancialCanvasInner({ portfolioId }: FinancialCanvasProps) {
             nodeTypes={nodeTypes}
             onNodesChange={onNodesChange}
             onNodeDragStop={handleNodeDragStop}
+            onSelectionDragStop={handleSelectionDragStop} 
+            selectionOnDrag={true}
+            selectionMode={SelectionMode.Partial}
+            panOnDrag={false}
             snapToGrid={true}
             snapGrid={[16, 16]}
             zoomOnScroll={true}
             panOnScroll={false}
-            panOnDrag={false}
             minZoom={0.2}
             maxZoom={2}
             defaultViewport={{ x: 50, y: 50, zoom: 1 }}

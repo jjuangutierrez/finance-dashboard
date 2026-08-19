@@ -4,9 +4,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using FinanceDashboard.Domain.Entities;
-
-using FinanceDashboard.Infrastructure.Authentication;
 using FinanceDashboard.Application.Interfaces;
+using System.Security.Cryptography;
 
 namespace FinanceDashboard.Infrastructure.Authentication;
 
@@ -25,7 +24,8 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
-            new(ClaimTypes.Name, user.UserName)
+            new(ClaimTypes.Name, user.UserName),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Secret));
@@ -39,5 +39,11 @@ public class JwtTokenGenerator : IJwtTokenGenerator
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(64);
+        return Convert.ToBase64String(randomBytes);
     }
 }
