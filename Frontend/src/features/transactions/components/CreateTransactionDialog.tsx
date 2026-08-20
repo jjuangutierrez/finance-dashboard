@@ -19,13 +19,14 @@ import {
 
 import { transactionService } from "../services/transaction.service";
 import type { TransactionType } from "../types/transaction.types";
+import type { WidgetKind } from "../../widget/types/widget.types";
 
 interface CreateTransactionDialogProps {
   isOpen: boolean;
   onClose: () => void;
   portfolioId: string;
   widgetId: string;
-  widgetKind: "tracker" | "saving_goal" | "recurring_expense";
+  widgetKind: WidgetKind;
   onTransactionCreated: () => void;
 }
 

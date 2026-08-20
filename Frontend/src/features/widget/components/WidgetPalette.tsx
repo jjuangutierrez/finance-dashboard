@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { WIDGET_OPTIONS } from "../constants/widget-options";
+import { WIDGET_OPTIONS } from "../constants/widgetOptions";
 import { WidgetPaletteItem } from "./WidgetPaletteItem";
 import type { WidgetKind } from "../types/widget.types";
 

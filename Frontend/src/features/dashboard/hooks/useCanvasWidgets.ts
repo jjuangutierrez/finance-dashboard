@@ -13,7 +13,7 @@ import { findNearestFreePosition, type Rect } from "../utils/canvasCollision";
 const DEFAULT_WIDGET_NAMES: Record<WidgetKind, string> = {
   summary: "Portfolio Summary",
   tracker: "Expense Tracker",
-  saving_goal: "House Savings Goal",
+  savinggoal: "Savings Goal",
   recurring_expense: "Monthly Subscriptions",
 };
 
@@ -22,8 +22,8 @@ const DEFAULT_WIDGET_SIZES: Record<
   { width: number; height: number }
 > = {
   summary: { width: 7, height: 2 },
-  tracker: { width: 3, height: 4 },
-  saving_goal: { width: 4, height: 3 },
+  tracker: { width: 3, height: 6 },
+  savinggoal: { width: 3, height: 4 },
   recurring_expense: { width: 4, height: 3 },
 };
 

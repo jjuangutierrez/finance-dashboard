@@ -43,23 +43,12 @@ public class PortfolioService : IPortfolioService
             ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
         var portfolio = new Portfolio(userId, request.Title, request.Description);
-
         _context.Portfolios.Add(portfolio);
 
-        var defaultSummaryWidget = Widget.CreateSummary(
-            portfolioId: portfolio.Id,
-            name: "Portfolio Summary",
-            description: "Overall portfolio financial balance",
-            posX: 0,
-            posY: 0,
-            width: 6,
-            height: 2
-        );
-
-        _context.Widgets.Add(defaultSummaryWidget);
+        var defaultSummary = Widget.CreateSummary(portfolio.Id);
+        _context.Widgets.Add(defaultSummary);
 
         await _context.SaveChangesAsync();
-
         return portfolio;
     }
 
@@ -122,33 +111,33 @@ public class PortfolioService : IPortfolioService
         );
     }
 
-public async Task<List<TransactionDto>> GetPortfolioTransactionsAsync(Guid portfolioId)
-{
-    var userId = _currentUser.UserId
-        ?? throw new UnauthorizedAccessException("User is not authenticated.");
+    public async Task<List<TransactionDto>> GetPortfolioTransactionsAsync(Guid portfolioId)
+    {
+        var userId = _currentUser.UserId
+            ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
-    var portfolioExists = await _context.Portfolios
-        .AnyAsync(p => p.Id == portfolioId && p.UserId == userId);
+        var portfolioExists = await _context.Portfolios
+            .AnyAsync(p => p.Id == portfolioId && p.UserId == userId);
 
-    if (!portfolioExists)
-        throw new KeyNotFoundException("Portfolio not found or access denied.");
+        if (!portfolioExists)
+            throw new KeyNotFoundException("Portfolio not found or access denied.");
 
-    return await _context.Transactions
-        .Where(t => t.Widget.PortfolioId == portfolioId)
-        .OrderByDescending(t => t.CreatedAt)
-        .Select(t => new TransactionDto(
-            t.Id,
-            t.WidgetId,
-            t.Title,
-            t.Description,
-            t.Amount,
-            t.Type.ToString().ToLower(),
-            t.RecurringMetadata != null ? (int?)t.RecurringMetadata.PaymentDay : null,
-            t.CreatedAt,
-            t.Widget.Name
-        ))
-        .ToListAsync();
-}
+        return await _context.Transactions
+            .Where(t => t.Widget.PortfolioId == portfolioId)
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new TransactionDto(
+                t.Id,
+                t.WidgetId,
+                t.Title,
+                t.Description,
+                t.Amount,
+                t.Type.ToString().ToLower(),
+                t.RecurringMetadata != null ? (int?)t.RecurringMetadata.PaymentDay : null,
+                t.CreatedAt,
+                t.Widget.Name
+            ))
+            .ToListAsync();
+    }
 
     public async Task DeleteAsync(Guid portfolioId)
     {

@@ -3,6 +3,8 @@ import type { PortfolioSummary } from "@/features/portfolio/types/portfolio.type
 
 import { TrackerWidget } from "../../widget/components/TrackerWidget";
 import { SummaryWidget } from "../../widget/components/SummaryWidget";
+import { SavingGoalWidget } from "@/features/widget/components/SavingGoalWidget";
+import { RecurringExpenseWidget } from "@/features/widget/components/RecurringExpenseWidget";
 
 interface WidgetRendererProps {
   widget: Widget;
@@ -11,8 +13,10 @@ interface WidgetRendererProps {
   summary: PortfolioSummary | null;
   loadingSummary: boolean;
   onDeleteWidget: (widgetId: string) => void;
-  onUpdateWidget?: (widgetId: string, data: { name?: string; description?: string }) => void;
-  
+  onUpdateWidget?: (
+    widgetId: string,
+    data: { name?: string; description?: string },
+  ) => void;
 }
 
 export function WidgetRenderer({
@@ -45,6 +49,32 @@ export function WidgetRenderer({
         <TrackerWidget
           portfolioId={portfolioId}
           widgetId={widget.id}
+          name={widget.name}
+          description={widget.description}
+          onDeleteWidget={() => onDeleteWidget(widget.id)}
+          onUpdateWidget={(data) => onUpdateWidget?.(widget.id, data)}
+        />
+      );
+
+    case "savinggoal":
+      return (
+        <SavingGoalWidget
+          widgetId={widget.id}
+          portfolioId={portfolioId}
+          name={widget.name}
+          description={widget.description}
+          targetAmount={widget.targetAmount ?? 0}
+          targetDate={widget.targetDate}
+          onDeleteWidget={() => onDeleteWidget(widget.id)}
+          onUpdateWidget={(data) => onUpdateWidget?.(widget.id, data)}
+        />
+      );
+
+    case "recurringexpense":
+      return (
+        <RecurringExpenseWidget
+          widgetId={widget.id}
+          portfolioId={portfolioId}
           name={widget.name}
           description={widget.description}
           onDeleteWidget={() => onDeleteWidget(widget.id)}

@@ -121,7 +121,6 @@ public class AuthService : IAuthService
 
         if (user is null)
         {
-            // 1. Usuario totalmente nuevo -> Se crea con Google
             var uniqueUserName = await GenerateUniqueUserNameAsync(googleUser.Email);
             var safeFirstName = !string.IsNullOrWhiteSpace(googleUser.FirstName)
                 ? googleUser.FirstName
@@ -196,7 +195,6 @@ public class AuthService : IAuthService
         var newJwtToken = _jwtTokenGenerator.GenerateToken(user);
         var newRawRefreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
-        // Guarda el hash del nuevo token
         user.UpdateRefreshToken(HashRefreshToken(newRawRefreshToken), DateTime.UtcNow.AddDays(7));
         await _context.SaveChangesAsync();
 
@@ -236,15 +234,7 @@ public class AuthService : IAuthService
             createdBy: creatorName
         );
 
-        var defaultSummaryWidget = Widget.CreateSummary(
-            portfolioId: defaultPortfolio.Id,
-            name: "Portfolio Summary",
-            description: "Overall portfolio financial balance",
-            posX: 0,
-            posY: 0,
-            width: 12,
-            height: 2
-        );
+        var defaultSummaryWidget = Widget.CreateSummary(defaultPortfolio.Id);
 
         _context.Portfolios.Add(defaultPortfolio);
         _context.Widgets.Add(defaultSummaryWidget);

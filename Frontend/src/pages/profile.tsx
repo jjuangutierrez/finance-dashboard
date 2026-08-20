@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,9 +7,14 @@ import { Input } from "@/components/ui/input";
 import { InfoRow } from "@/components/ui/info-row";
 import { User as UserIcon, Mail, Loader2, ArrowLeft } from "lucide-react";
 import { useProfileForm } from "@/features/user/hooks/useProfileForm";
+import { useAuth } from "@/features/auth/context/AuthContext";
+import userService from "@/features/user/services/user.service";
 
 export function Profile() {
     const navigate = useNavigate();
+    const { logout } = useAuth();
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const {
         profile,
         form,
@@ -19,6 +25,26 @@ export function Profile() {
         handleSave,
         handleCancel,
     } = useProfileForm();
+
+    const handleDeleteAccount = async () => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete your account? This action cannot be undone."
+        );
+
+        if (!confirmed) return;
+
+        try {
+            setIsDeleting(true);
+            await userService.deleteAccount();
+            await logout();
+            navigate("/");
+        } catch (error) {
+            console.error("Failed to delete account:", error);
+            alert("Error deleting account. Please try again.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     if (!profile) {
         return (
@@ -100,7 +126,22 @@ export function Profile() {
                                 </Button>
                             </>
                         ) : (
-                            <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+                            <>
+                                <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+                                <Button 
+                                    variant="destructive" 
+                                    onClick={handleDeleteAccount} 
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Deleting...
+                                        </>
+                                    ) : (
+                                        "Delete Account"
+                                    )}
+                                </Button>
+                            </>
                         )}
                     </div>
                 </CardContent>

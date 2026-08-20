@@ -10,9 +10,12 @@ class UserService {
   async updateProfile(request: {
     firstName: string;
     lastName: string;
-    userName: string;     
+    userName: string;
   }): Promise<void> {
     await api.put("/users/me", request);
+  }
+  async deleteAccount(): Promise<void> {
+    await api.delete("/users/me");
   }
 }
 

@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 
-export type WidgetKind = "tracker" | "saving_goal" | "recurring_expense" | "summary";
+export type WidgetKind = "tracker" | "savinggoal" | "recurringexpense" | "summary";
 
 export interface WidgetOption {
   kind: WidgetKind;

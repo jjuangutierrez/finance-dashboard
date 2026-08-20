@@ -1,7 +1,7 @@
 import { useState } from "react";
 import authService from "../../auth/services/auth.service";
 import { useAuth } from "@/features/auth/context/AuthContext";
-import type { LoginRequest } from "../../auth/services/auth.service";
+import type { LoginRequest } from "../../auth/types/auth.types";
 
 export function useLogin() {
   const { login: setSession } = useAuth();

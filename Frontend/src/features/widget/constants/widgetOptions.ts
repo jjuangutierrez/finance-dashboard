@@ -9,7 +9,7 @@ export const WIDGET_OPTIONS: WidgetOption[] = [
     description: "Ingresos y Gastos",
   },
   {
-    kind: "saving_goal",
+    kind: "savinggoal",
     title: "Saving Goal",
     icon: Target,
     description: "Meta de Ahorro",

@@ -1,30 +1,11 @@
 import api from "@/lib/api";
 import { tokenStorage } from "@/lib/tokenStorage";
 import { AxiosError } from "axios";
-
-export interface RegisterRequest {
-  firstName: string;
-  lastName?: string;
-  userName: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface GoogleLoginRequest {
-  idToken: string;
-}
-
-export interface AuthResult {
-  success: boolean;
-  token: string;
-  refreshToken: string;
-  errors: string[];
-}
+import type {
+  RegisterRequest,
+  LoginRequest,
+  AuthResult,
+} from "../types/auth.types"
 
 class AuthService {
   async register(request: RegisterRequest): Promise<AuthResult> {
