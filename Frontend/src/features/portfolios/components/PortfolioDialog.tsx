@@ -8,16 +8,24 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Portfolio } from "@/features/portfolio/types/portfolio.types";
+import { Loader2 } from "lucide-react";
+import type { Portfolio } from "@/features/portfolios/types/portfolio.types";
 
 interface PortfolioDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   editingPortfolio: Portfolio | null;
   onSave: (title: string) => Promise<void>;
+  isSaving?: boolean;
 }
 
-export function PortfolioDialog({ open, onOpenChange, editingPortfolio, onSave }: PortfolioDialogProps) {
+export function PortfolioDialog({
+  open,
+  onOpenChange,
+  editingPortfolio,
+  onSave,
+  isSaving = false,
+}: PortfolioDialogProps) {
   const [titleInput, setTitleInput] = useState("");
 
   useEffect(() => {
@@ -25,12 +33,12 @@ export function PortfolioDialog({ open, onOpenChange, editingPortfolio, onSave }
   }, [editingPortfolio, open]);
 
   async function handleSave() {
-    if (!titleInput.trim()) return;
-    await onSave(titleInput);
+    if (!titleInput.trim() || isSaving) return;
+    await onSave(titleInput.trim());
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={isSaving ? () => {} : onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
@@ -44,16 +52,31 @@ export function PortfolioDialog({ open, onOpenChange, editingPortfolio, onSave }
             value={titleInput}
             onChange={(e) => setTitleInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSave()}
+            disabled={isSaving}
             autoFocus
           />
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSaving}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave}>
-            {editingPortfolio ? "Save Changes" : "Create"}
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={isSaving || !titleInput.trim()}
+          >
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSaving
+              ? "Saving..."
+              : editingPortfolio
+              ? "Save Changes"
+              : "Create"}
           </Button>
         </DialogFooter>
       </DialogContent>

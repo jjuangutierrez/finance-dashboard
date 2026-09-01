@@ -148,20 +148,20 @@ export function SavingGoalWidget({
   return (
     <>
       <Card className="h-full flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
-        <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
+        {/* Header */}
+        <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0 shrink-0">
           <div className="flex items-center gap-2 min-w-0">
             <div
               className="drag-handle cursor-grab active:cursor-grabbing p-1 -ml-1 text-muted-foreground hover:text-foreground rounded transition-colors shrink-0"
               title="Drag to move"
             >
-              <GripHorizontal className="h-4 w-4" />
+              <GripHorizontal className="h-5 w-5" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <CardTitle className="text-base font-semibold flex items-center gap-1.5 h-7">
-                <Target className="h-4 w-4 text-emerald-600 shrink-0" />
+              <CardTitle className="text-lg font-bold flex items-center gap-2 h-8">
+                <Target className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
 
-                {/* Edición en línea de Título */}
                 {isEditingTitle ? (
                   <Input
                     value={titleValue}
@@ -174,25 +174,25 @@ export function SavingGoalWidget({
                         setIsEditingTitle(false);
                       }
                     }}
-                    className="h-7 text-xs font-semibold px-2 py-0 w-44"
+                    className="h-8 text-sm font-semibold px-2.5 py-0 w-48"
                     autoFocus
                   />
                 ) : (
                   <span
                     onClick={() => onUpdateWidget && setIsEditingTitle(true)}
-                    className="cursor-pointer hover:underline flex items-center gap-1.5 truncate group"
+                    className="cursor-pointer hover:underline flex items-center gap-2 truncate group"
                     title="Click to rename"
                   >
                     <span className="truncate">{name}</span>
                     {onUpdateWidget && (
-                      <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 text-muted-foreground transition-opacity shrink-0" />
+                      <Pencil className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 text-muted-foreground transition-opacity shrink-0" />
                     )}
                   </span>
                 )}
               </CardTitle>
 
               {description && (
-                <CardDescription className="text-xs truncate max-w-[200px]">
+                <CardDescription className="text-xs truncate max-w-[220px]">
                   {description}
                 </CardDescription>
               )}
@@ -203,10 +203,10 @@ export function SavingGoalWidget({
             <Button
               size="sm"
               variant="outline"
-              className="h-7 text-xs gap-1 cursor-pointer"
+              className="h-8 text-xs font-medium gap-1.5 cursor-pointer px-3"
               onClick={() => setIsTxModalOpen(true)}
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-4 w-4" />
               Deposit
             </Button>
 
@@ -214,39 +214,39 @@ export function SavingGoalWidget({
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-muted-foreground hover:text-destructive cursor-pointer"
+                className="h-8 w-8 text-muted-foreground hover:text-red-600 cursor-pointer"
                 onClick={onDeleteWidget}
                 title="Delete widget"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-4 w-4" />
               </Button>
             )}
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4 flex-1 flex flex-col justify-between text-xs">
+        {/* Content */}
+        <CardContent className="space-y-4 flex-1 flex flex-col min-h-0 pb-5">
           {loading ? (
-            <div className="h-32 bg-muted/20 animate-pulse rounded-lg flex items-center justify-center text-muted-foreground text-[11px]">
+            <div className="h-full bg-muted/20 animate-pulse rounded-xl flex items-center justify-center text-muted-foreground text-xs min-h-[140px]">
               Loading goal metrics...
             </div>
           ) : (
             <>
-              {/* Caja de Balance, Meta y Progreso */}
-              <div className="bg-muted/30 p-3.5 rounded-lg border space-y-3">
+              <div className="bg-muted/30 p-4 rounded-xl border space-y-3 shrink-0">
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold block">
+                    <span className="text-xs text-muted-foreground font-medium block mb-0.5">
                       Saved so far
                     </span>
                     <div className="flex items-baseline gap-1.5">
-                      <span className="font-bold text-lg text-foreground">
+                      <span className="font-bold text-xl md:text-2xl text-foreground tracking-tight">
                         ${currentAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                       </span>
 
-                      {/* Edición en línea de la META (Target) */}
+                      {/* Target */}
                       {isEditingTarget ? (
                         <div className="inline-flex items-center">
-                          <span className="text-muted-foreground text-xs mr-1">/ $</span>
+                          <span className="text-muted-foreground text-sm mr-1">/ $</span>
                           <Input
                             type="number"
                             value={targetValue}
@@ -259,18 +259,18 @@ export function SavingGoalWidget({
                                 setIsEditingTarget(false);
                               }
                             }}
-                            className="h-6 text-xs px-1.5 py-0 w-24"
+                            className="h-7 text-xs px-2 py-0 w-28"
                             autoFocus
                           />
                         </div>
                       ) : (
                         <span
                           onClick={() => onUpdateWidget && setIsEditingTarget(true)}
-                          className="text-muted-foreground text-xs hover:text-foreground cursor-pointer hover:underline flex items-center gap-1 group"
+                          className="text-muted-foreground text-sm font-medium hover:text-foreground cursor-pointer hover:underline flex items-center gap-1 group"
                           title="Click to edit target goal"
                         >
                           / ${targetAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                          <Pencil className="h-2.5 w-2.5 opacity-0 group-hover:opacity-100 text-muted-foreground" />
+                          <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 text-muted-foreground" />
                         </span>
                       )}
                     </div>
@@ -278,13 +278,13 @@ export function SavingGoalWidget({
 
                   <Badge
                     variant={isCompleted ? "default" : "secondary"}
-                    className={`text-xs px-2 py-0.5 font-semibold ${
+                    className={`text-xs px-2.5 py-0.5 font-semibold ${
                       isCompleted ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""
                     }`}
                   >
                     {isCompleted ? (
                       <span className="flex items-center gap-1">
-                        <CheckCircle2 className="h-3 w-3" /> Completed
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Completed
                       </span>
                     ) : (
                       `${progressPercentage}%`
@@ -292,11 +292,11 @@ export function SavingGoalWidget({
                   </Badge>
                 </div>
 
-                {/* Barra de progreso */}
-                <div className="space-y-1">
-                  <Progress value={progressPercentage} className="h-2" />
-                  <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-0.5">
-                    <span>
+                {/* Progress bar */}
+                <div className="space-y-1.5">
+                  <Progress value={progressPercentage} className="h-2.5 rounded-full" />
+                  <div className="flex justify-between items-center text-xs text-muted-foreground pt-0.5">
+                    <span className="font-medium">
                       {isCompleted
                         ? "Goal reached! 🎉"
                         : `$${remainingAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} left`}
@@ -309,16 +309,16 @@ export function SavingGoalWidget({
                         value={dateValue}
                         onChange={(e) => handleSaveDate(e.target.value)}
                         onBlur={() => setIsEditingDate(false)}
-                        className="h-5 text-[10px] px-1 py-0 w-28"
+                        className="h-6 text-xs px-1.5 py-0 w-32"
                         autoFocus
                       />
                     ) : (
                       <span
                         onClick={() => onUpdateWidget && setIsEditingDate(true)}
-                        className="flex items-center gap-1 hover:text-foreground cursor-pointer hover:underline"
+                        className="flex items-center gap-1.5 hover:text-foreground cursor-pointer hover:underline font-medium"
                         title="Click to set/change target date"
                       >
-                        <Calendar className="h-3 w-3" />
+                        <Calendar className="h-3.5 w-3.5" />
                         {formattedDate ? `Target: ${formattedDate}` : "+ Set target date"}
                       </span>
                     )}
@@ -326,37 +326,38 @@ export function SavingGoalWidget({
                 </div>
               </div>
 
-              {/* Transacciones recientes */}
-              <div className="space-y-2 flex-1 flex flex-col">
-                <div className="flex items-center justify-between text-[11px] font-medium text-muted-foreground">
-                  <span className="flex items-center gap-1">
+              <div className="space-y-2 flex-1 flex flex-col min-h-0 pt-1">
+                <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase tracking-wider shrink-0">
+                  <span className="flex items-center gap-1.5">
                     <Receipt className="h-3.5 w-3.5" /> Recent Contributions
                   </span>
                   <span>{transactions.length} total</span>
                 </div>
 
                 {transactions.length === 0 ? (
-                  <div className="flex-1 border border-dashed rounded-md p-3 flex flex-col items-center justify-center text-center text-muted-foreground bg-muted/10 min-h-[60px]">
-                    <p className="text-[11px]">No contributions yet.</p>
-                    <p className="text-[10px]">Add your first deposit to start saving!</p>
+                  <div className="flex-1 border border-dashed rounded-xl p-4 flex flex-col items-center justify-center text-center text-muted-foreground bg-muted/10 min-h-[70px]">
+                    <p className="text-xs font-medium">No contributions yet.</p>
+                    <p className="text-xs text-muted-foreground/80 mt-0.5">Add your first deposit to start saving!</p>
                   </div>
                 ) : (
-                  <div className="space-y-1.5 max-h-[110px] overflow-y-auto pr-1">
-                    {transactions.slice(0, 3).map((tx) => (
+                  <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0">
+                    {transactions.map((tx) => (
                       <div
                         key={tx.id}
-                        className="flex items-center justify-between p-2 rounded bg-background border text-[11px] group"
+                        className="flex items-center justify-between p-2.5 rounded-lg bg-background border text-sm group hover:border-muted-foreground/30 transition-colors"
                       >
                         <div className="min-w-0 pr-2">
-                          <p className="font-medium text-foreground truncate">{tx.title}</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="font-medium text-sm text-foreground truncate">{tx.title}</p>
+                          <p className="text-xs text-muted-foreground">
                             {new Date(tx.createdAt).toLocaleDateString()}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-2.5 shrink-0">
                           <span
-                            className={`font-semibold ${
-                              tx.type === "expense" ? "text-red-500" : "text-emerald-600"
+                            className={`font-semibold text-sm ${
+                              tx.type === "expense"
+                                ? "text-red-600 dark:text-red-400"
+                                : "text-emerald-600 dark:text-emerald-400"
                             }`}
                           >
                             {tx.type === "expense" ? "-" : "+"}
@@ -364,10 +365,10 @@ export function SavingGoalWidget({
                           </span>
                           <button
                             onClick={() => handleDeleteTx(tx.id)}
-                            className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-600 transition-opacity cursor-pointer"
+                            className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-600 transition-opacity cursor-pointer p-1 rounded hover:bg-muted"
                             title="Delete transaction"
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </div>

@@ -6,8 +6,9 @@ import {
   type ResizeParams,
 } from "@xyflow/react";
 import type { Widget } from "@/features/widget/types/widget.types";
-import type { PortfolioSummary } from "@/features/portfolio/types/portfolio.types";
+import type { PortfolioSummary } from "@/features/portfolios/types/portfolio.types";
 import { WidgetRenderer } from "./WidgetRenderer";
+import { getWidgetSizeConstraint } from "@/features/widget/constants/WidgetSizeConstraints";
 
 export type WidgetNodeData = {
   widget: Widget;
@@ -37,13 +38,20 @@ export function WidgetNode({
 
   const canResize = selected && selectedCount === 1;
 
+  // These are always raw pixel values — the single source of truth lives in
+  // widgetSizeConstraints.ts. The grid-cell equivalent used for persistence
+  // is derived from THESE SAME numbers via getMinGridSize (Math.ceil), so
+  // NodeResizer's live limit and the canvas's saved grid size can never
+  // disagree at the minimum boundary.
+  const { minWidth, minHeight } = getWidgetSizeConstraint(data.widget.kind);
+
   return (
     <>
       <NodeResizer
-        minWidth={240}
-        minHeight={140}
+        minWidth={minWidth}
+        minHeight={minHeight}
         isVisible={canResize}
-        handleClassName="!bg-primary !border-2 !border-background !w-2.5 !h-2.5 !rounded-sm"
+        handleClassName="!bg-primary !border-2 !border-background !w-3 !h-3 !rounded-sm"
         lineClassName="!border-primary/60"
         onResizeEnd={(_, params) => {
           data.onResizeWidget?.(id, params);

@@ -1,81 +1,95 @@
-import { useState } from "react";
-import { Bar, BarChart, Pie, PieChart, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
-import { BarChart3, PieChart as PieChartIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 
-interface ChartData {
+export interface TransactionChartItem {
+  id: string;
   name: string;
   amount: number;
+  type: "income" | "expense";
 }
 
 interface TrackerChartProps {
-  data: ChartData[];
+  data: TransactionChartItem[];
 }
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"];
+const PIE_COLORS = [
+  "#3b82f6", 
+  "#10b981", 
+  "#f97316", 
+  "#ef4444", 
+  "#8b5cf6", 
+  "#ec4899", 
+  "#06b6d4", 
+  "#eab308", 
+  "#14b8a6",
+];
+
+function CustomTooltip({ active, payload }: any) {
+  if (active && payload && payload.length) {
+    const item = payload[0].payload;
+    const isIncome = item.type === "income";
+
+    return (
+      <div className="bg-popover text-popover-foreground border border-border/80 px-3 py-2 rounded-lg shadow-lg text-xs min-w-[120px] pointer-events-none z-50">
+        <span className="font-semibold text-foreground block truncate max-w-[160px]">
+          {item.name}
+        </span>
+        <span
+          className={`font-bold block mt-0.5 ${
+            isIncome
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-red-600 dark:text-red-400"
+          }`}
+        >
+          {isIncome ? "+" : "-"}${Number(item.amount).toFixed(2)}
+        </span>
+      </div>
+    );
+  }
+  return null;
+}
 
 export function TrackerChart({ data }: TrackerChartProps) {
-  const [chartType, setChartType] = useState<"bar" | "pie">("bar");
-
   if (data.length === 0) {
     return (
-      <div className="h-40 flex items-center justify-center text-xs text-muted-foreground border border-dashed rounded-lg">
-        No expense data to display chart
+      <div className="h-32 flex items-center justify-center text-xs text-muted-foreground border border-dashed rounded-xl bg-muted/10">
+        No transactions to display chart
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex justify-end gap-1">
-        <Button
-          variant={chartType === "bar" ? "secondary" : "ghost"}
-          size="icon"
-          className="h-6 w-6"
-          onClick={() => setChartType("bar")}
-          title="Bar Chart"
-        >
-          <BarChart3 className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant={chartType === "pie" ? "secondary" : "ghost"}
-          size="icon"
-          className="h-6 w-6"
-          onClick={() => setChartType("pie")}
-          title="Pie Chart"
-        >
-          <PieChartIcon className="h-3.5 w-3.5" />
-        </Button>
-      </div>
+    <div className="relative h-40 w-full flex items-center justify-center">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Tooltip content={<CustomTooltip />} />
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={40}
+            outerRadius={65}
+            paddingAngle={3}
+            dataKey="amount"
+            stroke="none"
+          >
+            {data.map((_, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={PIE_COLORS[index % PIE_COLORS.length]}
+                className="hover:opacity-85 transition-opacity cursor-pointer"
+              />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
 
-      <div className="h-44 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          {chartType === "bar" ? (
-            <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <XAxis dataKey="name" fontSize={10} tickLine={false} />
-              <YAxis fontSize={10} tickLine={false} />
-              <Tooltip formatter={(value: any) => [`$${value ?? 0}`, "Amount"]} />
-              <Bar dataKey="amount" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          ) : (
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={35}
-                outerRadius={60}
-                paddingAngle={4}
-                dataKey="amount"
-              >
-                {data.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value: any) => [`$${value ?? 0}`, "Amount"]} />
-            </PieChart>
-          )}
-        </ResponsiveContainer>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+        <span className="text-base font-bold text-foreground leading-none">
+          {data.length}
+        </span>
+        <span className="text-[10px] font-medium text-muted-foreground mt-0.5">
+          total
+        </span>
       </div>
     </div>
   );

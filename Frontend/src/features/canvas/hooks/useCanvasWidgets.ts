@@ -6,26 +6,58 @@ import type {
   WidgetKind,
   UpdateWidgetLayoutItem,
 } from "@/features/widget/types/widget.types";
-import { portfolioService } from "@/features/portfolio/services/portfolio.service";
-import type { PortfolioSummary } from "@/features/portfolio/types/portfolio.types";
-import { findNearestFreePosition, type Rect } from "../utils/canvasCollision";
+import { portfolioService } from "@/features/portfolios/services/portfolio.service";
+import type { PortfolioSummary } from "@/features/portfolios/types/portfolio.types";
+import { getMinGridSize } from "@/features/widget/constants/WidgetSizeConstraints";
+import {
+  COL_WIDTH,
+  ROW_HEIGHT,
+  findNearestFreePosition,
+  type Rect,
+} from "../utils/canvasCollision";
 
 const DEFAULT_WIDGET_NAMES: Record<WidgetKind, string> = {
   summary: "Portfolio Summary",
   tracker: "Expense Tracker",
   savinggoal: "Savings Goal",
-  recurring_expense: "Monthly Subscriptions",
+  recurringexpense: "Monthly Subscriptions",
 };
 
-const DEFAULT_WIDGET_SIZES: Record<
+/**
+ * Default VISUAL size for a newly created widget, in pixels — independent
+ * of grid resolution. These numbers are the "looks right" sizes (same as
+ * what the app used to render back when COL_WIDTH=250 / ROW_HEIGHT=116),
+ * kept as a fixed pixel target so that changing COL_WIDTH/ROW_HEIGHT (grid
+ * fineness) never changes how big a new widget LOOKS — only how many cells
+ * it takes to represent that same pixel size.
+ */
+const DEFAULT_WIDGET_PIXEL_SIZES: Record<
   WidgetKind,
   { width: number; height: number }
 > = {
-  summary: { width: 7, height: 2 },
-  tracker: { width: 3, height: 6 },
-  savinggoal: { width: 3, height: 4 },
-  recurring_expense: { width: 4, height: 3 },
+  summary: { width: 1750, height: 232 },
+  tracker: { width: 500, height: 500 },
+  savinggoal: { width: 500, height: 500 },
+  recurringexpense: { width: 550, height: 500 },
 };
+
+const DEFAULT_PIXEL_SIZE = { width: 750, height: 232 };
+
+/**
+ * Converts the fixed pixel target above into grid cells using the CURRENT
+ * COL_WIDTH/ROW_HEIGHT (Math.ceil, so we never round down below the target),
+ * then clamps to the widget kind's real minimum via getMinGridSize so a
+ * widget never spawns smaller than its content needs.
+ */
+function getDefaultSize(kind: WidgetKind) {
+  const pixelSize = DEFAULT_WIDGET_PIXEL_SIZES[kind] || DEFAULT_PIXEL_SIZE;
+  const { minGridW, minGridH } = getMinGridSize(kind, COL_WIDTH, ROW_HEIGHT);
+
+  const width = Math.max(minGridW, Math.ceil(pixelSize.width / COL_WIDTH));
+  const height = Math.max(minGridH, Math.ceil(pixelSize.height / ROW_HEIGHT));
+
+  return { width, height };
+}
 
 export interface CanvasLayoutItem {
   i: string;
@@ -84,10 +116,7 @@ export function useCanvasWidgets(portfolioId: string | null) {
           description: "Click options to customize",
         });
 
-        const defaultSize = DEFAULT_WIDGET_SIZES[kind] || {
-          width: 6,
-          height: 2,
-        };
+        const defaultSize = getDefaultSize(kind);
         const width = defaultSize.width;
         const height = defaultSize.height;
 
@@ -95,8 +124,8 @@ export function useCanvasWidgets(portfolioId: string | null) {
           id: w.id,
           x: w.posX,
           y: w.posY,
-          w: w.width || (DEFAULT_WIDGET_SIZES[w.kind]?.width ?? 6),
-          h: w.height || (DEFAULT_WIDGET_SIZES[w.kind]?.height ?? 2),
+          w: w.width || getDefaultSize(w.kind).width,
+          h: w.height || getDefaultSize(w.kind).height,
         }));
 
         const candidateRect: Rect = {
@@ -205,7 +234,6 @@ export function useCanvasWidgets(portfolioId: string | null) {
     [portfolioId, widgets.length],
   );
 
-  // 🔴 ¡AQUÍ SOLO DEBE HABER UN RETURN AL FINAL!
   return {
     widgets,
     loading,

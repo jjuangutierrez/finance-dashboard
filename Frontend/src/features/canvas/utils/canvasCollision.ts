@@ -1,5 +1,5 @@
-export const COL_WIDTH = 250;
-export const ROW_HEIGHT = 116;
+export const COL_WIDTH = 50;
+export const ROW_HEIGHT = 50;
 
 export interface Rect {
   id: string;
@@ -9,9 +9,6 @@ export interface Rect {
   h: number;
 }
 
-/**
- * Comprueba si dos rectángulos en la grilla se solapan
- */
 export function doRectsOverlap(r1: Rect, r2: Rect): boolean {
   return (
     r1.x < r2.x + r2.w &&

@@ -1,5 +1,10 @@
 import api from "@/lib/api";
-import type { Portfolio, CreatePortfolioRequest, UpdatePortfolioRequest, PortfolioSummary } from "../types/portfolio.types";
+import type { 
+  Portfolio, 
+  CreatePortfolioRequest, 
+  UpdatePortfolioRequest, 
+  PortfolioSummary 
+} from "../types/portfolio.types";
 
 export const portfolioService = {
   async getAll(): Promise<Portfolio[]> {

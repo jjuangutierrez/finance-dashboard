@@ -1,8 +1,8 @@
 import type { Widget } from "@/features/widget/types/widget.types";
-import type { PortfolioSummary } from "@/features/portfolio/types/portfolio.types";
+import type { PortfolioSummary } from "@/features/portfolios/types/portfolio.types";
 
-import { TrackerWidget } from "../../widget/components/TrackerWidget";
-import { SummaryWidget } from "../../widget/components/SummaryWidget";
+import { TrackerWidget } from "./TrackerWidget";
+import { SummaryWidget } from "./SummaryWidget";
 import { SavingGoalWidget } from "@/features/widget/components/SavingGoalWidget";
 import { RecurringExpenseWidget } from "@/features/widget/components/RecurringExpenseWidget";
 

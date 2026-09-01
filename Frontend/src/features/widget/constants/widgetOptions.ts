@@ -15,7 +15,7 @@ export const WIDGET_OPTIONS: WidgetOption[] = [
     description: "Meta de Ahorro",
   },
   {
-    kind: "recurring_expense",
+    kind: "recurringexpense",
     title: "Recurring Expense",
     icon: Repeat,
     description: "Suscripciones y Pagos",

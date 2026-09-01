@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/features/dashboard/components/DashboardSidebar";
-import { FinancialCanvas } from "@/features/dashboard/components/FinancialCanvas";
+import { FinancialCanvas } from "../features/canvas/components/FinancialCanvas";
 
 export function Dashboard() {
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
@@ -17,11 +17,7 @@ export function Dashboard() {
         <main className="flex flex-1 flex-col overflow-hidden">
           <div className="flex items-center border-b px-4 py-2 bg-background justify-between">
             <SidebarTrigger />
-            {selectedPortfolioId && (
-              <span className="text-xs text-muted-foreground font-mono">
-                Portfolio ID: {selectedPortfolioId}
-              </span>
-            )}
+
           </div>
 
           <div className="flex-1 overflow-hidden relative">

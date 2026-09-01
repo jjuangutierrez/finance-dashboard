@@ -63,8 +63,8 @@ public class Widget : AuditableEntity
             string? description = null,
             int posX = 0,
             int posY = 0,
-            int width = 6,
-            int height = 2)
+            int width = 31,
+            int height = 6)
     {
         var widget = new Widget(
             portfolioId,

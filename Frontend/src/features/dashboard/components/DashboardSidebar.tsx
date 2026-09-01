@@ -10,11 +10,11 @@ import {
 } from "@/components/ui/sidebar";
 
 import { usePortfolios } from "../hooks/usePortfolios";
-import { PortfolioList } from "./PortfolioList";
-import { PortfolioDialog } from "./PortfolioDialog";
+import { PortfolioList } from "../../portfolios/components/PortfolioList";
+import { PortfolioDialog } from "../../portfolios/components/PortfolioDialog";
 import { AccountMenu } from "./AccountMenu";
 import type { DashboardSidebarProps } from "../interfaces/DashboardSidebarProps";
-import type { Portfolio } from "@/features/portfolio/types/portfolio.types";
+import type { Portfolio } from "@/features/portfolios/types/portfolio.types";
 
 export function DashboardSidebar({
   selectedPortfolioId,
@@ -23,6 +23,7 @@ export function DashboardSidebar({
   const {
     portfolios,
     loading,
+    isSaving,
     createPortfolio,
     renamePortfolio,
     deletePortfolio,
@@ -32,9 +33,7 @@ export function DashboardSidebar({
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPortfolio, setEditingPortfolio] = useState<Portfolio | null>(
-    null,
-  );
+  const [editingPortfolio, setEditingPortfolio] = useState<Portfolio | null>(null);
 
   function handleOpenCreateModal() {
     setEditingPortfolio(null);
@@ -47,12 +46,16 @@ export function DashboardSidebar({
   }
 
   async function handleSave(title: string) {
+    let success = false;
     if (editingPortfolio) {
-      await renamePortfolio(editingPortfolio, title);
+      success = await renamePortfolio(editingPortfolio, title);
     } else {
-      await createPortfolio(title);
+      success = await createPortfolio(title);
     }
-    setIsModalOpen(false);
+
+    if (success) {
+      setIsModalOpen(false);
+    }
   }
 
   return (
@@ -61,20 +64,13 @@ export function DashboardSidebar({
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent"
-              >
+              <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <Wallet className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    Finance Dashboard
-                  </span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    Personal
-                  </span>
+                  <span className="truncate font-semibold">Finance Dashboard</span>
+                  <span className="truncate text-xs text-muted-foreground">Personal</span>
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -101,6 +97,7 @@ export function DashboardSidebar({
         onOpenChange={setIsModalOpen}
         editingPortfolio={editingPortfolio}
         onSave={handleSave}
+        isSaving={isSaving}
       />
     </>
   );

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AllTransactionsDialog } from "../../transactions/components/AllTransactionsDialog";
-import type { PortfolioSummary } from "@/features/portfolio/types/portfolio.types";
+import type { PortfolioSummary } from "@/features/portfolios/types/portfolio.types";
 import type { Widget } from "@/features/widget/types/widget.types";
 
 interface SummaryWidgetProps {
@@ -46,22 +46,22 @@ export function SummaryWidget({
   return (
     <>
       <Card className="h-full flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
-        <CardHeader className="pb-2 flex flex-row items-start justify-between space-y-0">
+        <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
           <div className="flex items-center gap-2">
             <div
               className="drag-handle cursor-grab active:cursor-grabbing p-1 -ml-1 text-muted-foreground hover:text-foreground rounded transition-colors"
               title="Drag to move"
             >
-              <GripHorizontal className="h-4 w-4" />
+              <GripHorizontal className="h-5 w-5" />
             </div>
 
             <div>
-              <CardTitle className="text-base font-semibold flex items-center gap-1.5">
-                <Wallet className="h-4 w-4 text-primary" />
+              <CardTitle className="text-lg font-bold flex items-center gap-2">
+                <Wallet className="h-5 w-5 text-primary" />
                 {name}
               </CardTitle>
               {description && (
-                <CardDescription className="text-xs truncate max-w-[200px]">
+                <CardDescription className="text-xs truncate max-w-[250px]">
                   {description}
                 </CardDescription>
               )}
@@ -72,33 +72,34 @@ export function SummaryWidget({
             <Button
               size="sm"
               variant="outline"
-              className="h-7 text-xs gap-1 cursor-pointer"
+              className="h-8 text-xs font-medium gap-1.5 cursor-pointer px-3"
               onClick={() => setIsAllTxModalOpen(true)}
             >
-              <ListFilter className="h-3.5 w-3.5" />
+              <ListFilter className="h-4 w-4" />
               View All
             </Button>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4 flex-1 flex flex-col justify-center text-xs">
+        <CardContent className="flex-1 flex flex-col justify-center pb-5">
           {loading || !summary ? (
-            <div className="h-20 bg-muted/20 animate-pulse rounded-lg flex items-center justify-center text-muted-foreground text-[11px]">
+            <div className="h-24 bg-muted/20 animate-pulse rounded-xl flex items-center justify-center text-muted-foreground text-sm">
               Loading summary metrics...
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-muted/30 p-3 rounded-lg border">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-md bg-primary/10 text-primary shrink-0">
-                  <Wallet className="h-4 w-4" />
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 bg-muted/30 p-4 rounded-xl border">
+              {/* Net Balance */}
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-lg bg-primary/10 text-primary shrink-0">
+                  <Wallet className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <span className="text-[10px] text-muted-foreground block font-medium truncate">
+                  <span className="text-xs text-muted-foreground block font-medium truncate mb-0.5">
                     Net Balance
                   </span>
                   <span
-                    className={`font-bold text-sm truncate block ${
-                      summary.netBalance >= 0 ? "text-emerald-600" : "text-red-600"
+                    className={`font-bold text-lg md:text-xl truncate block tracking-tight ${
+                      summary.netBalance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     ${summary.netBalance.toFixed(2)}
@@ -107,47 +108,47 @@ export function SummaryWidget({
               </div>
 
               {/* Total Income */}
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-md bg-emerald-500/10 text-emerald-500 shrink-0">
-                  <ArrowUpRight className="h-4 w-4" />
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+                  <ArrowUpRight className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <span className="text-[10px] text-muted-foreground block font-medium truncate">
+                  <span className="text-xs text-muted-foreground block font-medium truncate mb-0.5">
                     Total Income
                   </span>
-                  <span className="font-semibold text-xs text-foreground truncate block">
+                  <span className="font-bold text-base md:text-lg text-foreground truncate block tracking-tight">
                     +${summary.totalIncome.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               {/* Total Expenses */}
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-md bg-red-500/10 text-red-500 shrink-0">
-                  <ArrowDownRight className="h-4 w-4" />
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 shrink-0">
+                  <ArrowDownRight className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <span className="text-[10px] text-muted-foreground block font-medium truncate">
+                  <span className="text-xs text-muted-foreground block font-medium truncate mb-0.5">
                     Total Expenses
                   </span>
-                  <span className="font-semibold text-xs text-foreground truncate block">
+                  <span className="font-bold text-base md:text-lg text-foreground truncate block tracking-tight">
                     -${summary.totalExpenses.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               {/* Activity */}
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-md bg-muted text-muted-foreground shrink-0">
-                  <Receipt className="h-4 w-4" />
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-lg bg-muted text-muted-foreground shrink-0 border border-border/50">
+                  <Receipt className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <span className="text-[10px] text-muted-foreground block font-medium truncate">
+                  <span className="text-xs text-muted-foreground block font-medium truncate mb-0.5">
                     Total Activity
                   </span>
-                  <span className="font-semibold text-xs text-foreground truncate block">
+                  <span className="font-bold text-base md:text-lg text-foreground truncate block tracking-tight">
                     {summary.totalTransactions}{" "}
-                    <span className="text-[10px] font-normal text-muted-foreground">txs</span>
+                    <span className="text-xs font-normal text-muted-foreground">txs</span>
                   </span>
                 </div>
               </div>

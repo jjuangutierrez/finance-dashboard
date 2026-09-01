@@ -45,7 +45,7 @@ export function CreateTransactionDialog({
   const [paymentDay, setPaymentDay] = useState("1");
   const [submitting, setSubmitting] = useState(false);
 
-  const isRecurring = widgetKind === "recurring_expense";
+  const isRecurring = widgetKind === "recurringexpense";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

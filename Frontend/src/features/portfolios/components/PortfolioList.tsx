@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Portfolio } from "@/features/portfolio/types/portfolio.types";
+import type { Portfolio } from "@/features/portfolios/types/portfolio.types";
 
 interface PortfolioListProps {
   portfolios: Portfolio[];

@@ -1,10 +1,10 @@
-import { useReactFlow } from "@xyflow/react";
+import { useReactFlow, useViewport } from "@xyflow/react";
 import { ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function CanvasZoomControls() {
   const { zoomIn, zoomOut, setViewport, getViewport } = useReactFlow();
-  const { zoom } = getViewport();
+  const { zoom } = useViewport();
   const zoomPercentage = Math.round((zoom || 1) * 100);
 
   const handleReset = () => {

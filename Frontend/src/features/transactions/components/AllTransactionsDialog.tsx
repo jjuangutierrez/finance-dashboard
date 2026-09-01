@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import { transactionService } from "@/features/transactions/services/transaction.service";
-import { portfolioService } from "@/features/portfolio/services/portfolio.service";
+import { portfolioService } from "@/features/portfolios/services/portfolio.service";
 import type { Transaction } from "@/features/transactions/types/transaction.types";
 import type { Widget } from "@/features/widget/types/widget.types";
 
@@ -53,7 +53,7 @@ export function AllTransactionsDialog({
       }
 
       const validWidgets = widgets.filter(
-        (w) => w.kind === "tracker" || w.kind === "recurring_expense" || w.kind === "saving_goal"
+        (w) => w.kind === "tracker" || w.kind === "recurringexpense" || w.kind === "savinggoal"
       );
 
       const promises = validWidgets.map(async (widget) => {
