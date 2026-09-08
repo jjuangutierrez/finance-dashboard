@@ -88,21 +88,34 @@ export function SummaryWidget({
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 bg-muted/30 p-4 rounded-xl border">
-              {/* Net Balance */}
+              {/*
+                Net Balance / Total Spent
+                When the user has no recorded income, "netBalance" is just
+                `0 - totalExpenses` — that's not really a balance, it's just
+                how much they've logged spending. Showing that in red implies
+                a deficit that doesn't actually exist; it's just an
+                expense-only tracker for this portfolio. So: only treat it as
+                a real balance (with emerald/red semantics) once there's
+                income to balance against.
+              */}
               <div className="flex items-center gap-3">
                 <div className="p-2.5 rounded-lg bg-primary/10 text-primary shrink-0">
                   <Wallet className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
                   <span className="text-xs text-muted-foreground block font-medium truncate mb-0.5">
-                    Net Balance
+                    {summary.totalIncome > 0 ? "Net Balance" : "Total Spent"}
                   </span>
                   <span
                     className={`font-bold text-lg md:text-xl truncate block tracking-tight ${
-                      summary.netBalance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
+                      summary.totalIncome === 0
+                        ? "text-foreground"
+                        : summary.netBalance >= 0
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-red-600 dark:text-red-400"
                     }`}
                   >
-                    ${summary.netBalance.toFixed(2)}
+                    ${Math.abs(summary.netBalance).toFixed(2)}
                   </span>
                 </div>
               </div>

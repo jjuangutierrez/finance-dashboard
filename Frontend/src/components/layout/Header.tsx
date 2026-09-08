@@ -15,7 +15,6 @@ import { NavLinks } from "./NavLinks";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LanguageSwitcherButtons } from "./LanguageSwitcherButtons";
 import { ThemeToggle } from "./ThemeToggle";
-import { ThemeToggleButtons } from "./ThemeToggleButtons";
 
 export function Header() {
   const { t } = useTranslation();
@@ -70,7 +69,7 @@ export function Header() {
                   <span className="text-xs text-muted-foreground font-semibold px-1">
                     Tema / Appearance
                   </span>
-                  <ThemeToggleButtons />
+                  <ThemeToggle />
                 </div>
               </div>
             </nav>

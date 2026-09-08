@@ -1,5 +1,6 @@
-import { User, UserCheck, LogOut } from "lucide-react";
+import { User, UserCheck, LogOut, Sun, Moon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/features/auth/context/AuthContext";
 import {
   SidebarFooter,
@@ -16,11 +17,16 @@ import {
 
 export function AccountMenu() {
   const navigate = useNavigate();
-  const { logout } = useAuth(); 
+  const { logout } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = async () => {
     await logout();
     navigate("/");
+  };
+
+  const handleToggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   return (
@@ -43,6 +49,15 @@ export function AccountMenu() {
               <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
                 <UserCheck className="mr-2 h-4 w-4" />
                 <span>View Profile</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={handleToggleTheme} className="cursor-pointer">
+                {theme === "dark" ? (
+                  <Sun className="mr-2 h-4 w-4" />
+                ) : (
+                  <Moon className="mr-2 h-4 w-4" />
+                )}
+                <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
               </DropdownMenuItem>
 
               <DropdownMenuItem

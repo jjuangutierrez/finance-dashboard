@@ -95,7 +95,17 @@ export function TrackerWidget({
     .filter((t) => t.type === "expense")
     .reduce((acc, t) => acc + t.amount, 0);
 
+  const hasIncome = totalIncome > 0;
   const netBalance = totalIncome - totalExpenses;
+
+  const netLabel = hasIncome ? "Net Balance" : "Total Spent";
+  const netValue = hasIncome ? netBalance : totalExpenses;
+  const netColorClass = !hasIncome
+    ? "text-foreground"
+    : netBalance >= 0
+      ? "text-emerald-600 dark:text-emerald-400"
+      : "text-red-600 dark:text-red-400";
+  const netSign = !hasIncome ? "-" : netBalance >= 0 ? "" : "-";
 
   const chartData = useMemo(() => {
     return transactions.map((t) => ({
@@ -197,26 +207,22 @@ export function TrackerWidget({
         </CardHeader>
 
         <CardContent className="space-y-4 flex-1 flex flex-col min-h-0 pb-5">
-          {/* Métricas Resumidas */}
           <div className="grid grid-cols-3 gap-3 bg-muted/30 p-3.5 rounded-xl border shrink-0">
             <div>
               <span className="text-xs text-muted-foreground block font-medium mb-0.5">
-                Net Balance
+                {netLabel}
               </span>
               <span
-                className={`font-bold text-base md:text-lg block tracking-tight ${
-                  netBalance >= 0
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
+                className={`font-bold text-base md:text-lg block tracking-tight ${netColorClass}`}
               >
-                ${netBalance.toFixed(2)}
+                {netSign}${Math.abs(netValue).toFixed(2)}
               </span>
             </div>
 
             <div>
               <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium mb-0.5">
-                <ArrowUpRight className="h-3.5 w-3.5 text-emerald-500 shrink-0" /> Income
+                <ArrowUpRight className="h-3.5 w-3.5 text-emerald-500 shrink-0" />{" "}
+                Income
               </span>
               <span className="font-bold text-sm md:text-base text-foreground block tracking-tight">
                 +${totalIncome.toFixed(2)}
@@ -225,7 +231,8 @@ export function TrackerWidget({
 
             <div>
               <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium mb-0.5">
-                <ArrowDownRight className="h-3.5 w-3.5 text-red-500 shrink-0" /> Expenses
+                <ArrowDownRight className="h-3.5 w-3.5 text-red-500 shrink-0" />{" "}
+                Expenses
               </span>
               <span className="font-bold text-sm md:text-base text-foreground block tracking-tight">
                 -${totalExpenses.toFixed(2)}
@@ -244,7 +251,9 @@ export function TrackerWidget({
             </span>
 
             {loading ? (
-              <p className="text-muted-foreground text-xs py-2">Loading transactions...</p>
+              <p className="text-muted-foreground text-xs py-2">
+                Loading transactions...
+              </p>
             ) : transactions.length === 0 ? (
               <p className="text-muted-foreground text-xs italic py-2">
                 No transactions recorded yet.
