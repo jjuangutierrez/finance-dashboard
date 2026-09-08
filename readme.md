@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="frontend/src/assets/hero.png" alt="Finance Dashboard" width="100%" />
+<img src="Frontend/src/assets/hero.png" alt="Finance Dashboard" width="100%" />
 
 # 💰 Finance Dashboard
 
@@ -88,7 +88,7 @@ src/
 ├── Domain/           # Entidades, enums y reglas de negocio puras
 ├── Application/       # Casos de uso, DTOs, interfaces (CQRS-like)
 ├── Infrastructure/    # EF Core, repositorios, servicios externos, JWT, TOTP
-└── API/                # Controllers, middlewares, configuración de la app
+└── API/               # Controllers, middlewares, configuración de la app
 ```
 
 El frontend organiza los widgets como módulos independientes que se registran en el grid del dashboard, permitiendo agregar nuevos tipos de widget sin acoplarlos al layout principal.
@@ -96,10 +96,10 @@ El frontend organiza los widgets como módulos independientes que se registran e
 ## 📸 Capturas de pantalla
 
 <div align="center">
-  <img src="frontend/src/assets/preview1.png" alt="Preview 1 - Dashboard interactivo" width="800" />
+  <img src="Frontend/src/assets/preview1.png" alt="Preview 1 - Dashboard interactivo" width="800" />
   <br /><br />
-  <img src="frontend/src/assets/preview2.png" alt="Preview 2" width="390" />
-  <img src="frontend/src/assets/preview3.png" alt="Preview 3" width="390" />
+  <img src="Frontend/src/assets/preview2.png" alt="Preview 2" width="390" />
+  <img src="Frontend/src/assets/preview3.png" alt="Preview 3" width="390" />
 </div>
 
 > Capturas tomadas en el entorno local — la app aún no está desplegada online.
@@ -109,9 +109,9 @@ El frontend organiza los widgets como módulos independientes que se registran e
 <br>
 
 <div align="center">
-  <img src="frontend/src/assets/TrackerWidget.png" alt="Tracker Widget" width="270" />
-  <img src="frontend/src/assets/SavingGoalWidget.png" alt="Saving Goal Widget" width="270" />
-  <img src="frontend/src/assets/RecurringExpenses.png" alt="Recurring Expenses Widget" width="270" />
+  <img src="Frontend/src/assets/TrackerWidget.png" alt="Tracker Widget" width="270" />
+  <img src="Frontend/src/assets/SavingGoalWidget.png" alt="Saving Goal Widget" width="270" />
+  <img src="Frontend/src/assets/RecurringExpenses.png" alt="Recurring Expenses Widget" width="270" />
 </div>
 
 </details>
@@ -135,7 +135,7 @@ cd finance-dashboard
 ### 2. Backend (.NET)
 
 ```bash
-cd backend
+cd Backend
 
 # Restaurar dependencias
 dotnet restore
@@ -155,7 +155,7 @@ La API quedará disponible en `https://localhost:5001` (o el puerto configurado 
 ### 3. Frontend (React)
 
 ```bash
-cd frontend
+cd Frontend
 
 # Instalar dependencias
 npm install
@@ -212,3 +212,12 @@ Desarrollador full-stack — React / TypeScript / .NET
 ⭐️ Si te parece interesante el proyecto, ¡una estrella en el repo ayuda mucho!
 
 </div>
+```
+
+---
+
+> ⚠️ **Recuerda:** Una vez que guardes este archivo, ejecuta en tu terminal para que los cambios y las imágenes se reflejen en GitHub:
+> ```bash
+> git add .
+> git commit -m "docs: actualizar rutas de imagenes y README"
+> git push
