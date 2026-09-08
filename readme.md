@@ -9,14 +9,14 @@
 [![.NET](https://img.shields.io/badge/.NET-8-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC2927?logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/sql-server)
 [![Shadcn UI](https://img.shields.io/badge/UI-shadcn%2Fui-000000?logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
-[![Status](https://img.shields.io/badge/status-en%20desarrollo-yellow)]()
+[![Status](https://img.shields.io/badge/status-completo%20%7C%20no%20desplegado-brightgreen)]()
 [![License](https://img.shields.io/badge/license-MIT-blue)]()
 
 </div>
 
 ---
 
-> ⚠️ **Proyecto en desarrollo activo.** Esta aplicación aún **no está desplegada en producción**. Puedes clonarla y correrla localmente siguiendo la guía de instalación más abajo — todo el stack (frontend + backend + base de datos) funciona de extremo a extremo en tu máquina.
+> ✅ **Proyecto terminado.** La aplicación está completa y funcional; lo único pendiente es el despliegue en un entorno público (aún no está online). Puedes clonarla y correrla localmente siguiendo la guía de instalación más abajo — todo el stack (frontend + backend + base de datos) funciona de extremo a extremo en tu máquina.
 
 ## 📋 Tabla de contenidos
 
@@ -32,7 +32,7 @@
 
 ## 🚀 Sobre el proyecto
 
-**Finance Dashboard** es una aplicación web para gestión de finanzas personales, con un dashboard **basado en widgets arrastrables/configurables** (grid dinámico) donde el usuario arma su propia vista financiera: seguimiento de gastos, metas de ahorro, gastos recurrentes y más.
+**Finance Dashboard** es una aplicación web completa para gestión de finanzas personales, con un dashboard **basado en widgets arrastrables/configurables** (grid dinámico) donde el usuario arma su propia vista financiera: seguimiento de gastos, metas de ahorro, gastos recurrentes y más.
 
 El objetivo del proyecto es aplicar buenas prácticas de arquitectura de software en un caso real de punta a punta: frontend moderno con React, backend en .NET siguiendo **Clean Architecture**, y un sistema de autenticación robusto con **JWT + verificación en dos pasos (Google Authenticator / TOTP)**.
 
@@ -84,7 +84,14 @@ El frontend organiza los widgets como módulos independientes que se registran e
 
 ## 📸 Capturas de pantalla
 
-> _Próximamente — el dashboard está en desarrollo activo. Se agregarán capturas a medida que las vistas principales queden listas._
+<div align="center">
+  <img src="frontend/assets/preview1.png" alt="Preview 1 - Dashboard" width="800" />
+  <br /><br />
+  <img src="frontend/assets/preview2.png" alt="Preview 2" width="390" />
+  <img src="frontend/assets/preview3.png" alt="Preview 3" width="390" />
+</div>
+
+> Capturas tomadas en el entorno local — la app aún no está desplegada online.
 
 ## ⚙️ Instalación y ejecución local
 
@@ -163,9 +170,8 @@ Ejemplo de configuración necesaria en el backend (`appsettings.Development.json
 - [x] Sistema de autenticación JWT + 2FA (Google Authenticator)
 - [x] Arquitectura de widgets en el dashboard
 - [x] Widget de seguimiento de gastos (`TrackerWidget`)
-- [ ] Widget de metas de ahorro (`SavingGoalWidget`) — en progreso
-- [ ] Widget de gastos recurrentes
-- [ ] Reportes y gráficas exportables
+- [x] Widget de metas de ahorro (`SavingGoalWidget`)
+- [x] Widget de gastos recurrentes
 - [ ] Despliegue en producción (Azure / Docker)
 
 ## 👤 Autor
