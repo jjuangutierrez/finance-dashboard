@@ -30,7 +30,7 @@ export function Header() {
     <header className="w-full py-5 px-6 md:px-12 flex justify-between items-center border-b border-border">
       <div className="flex items-center gap-2">
         <span className="font-extrabold text-2xl tracking-tight text-primary">
-          My App
+          Finboard
         </span>
       </div>
 
