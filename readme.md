@@ -210,12 +210,3 @@ Desarrollador full-stack — React / TypeScript / .NET
 ⭐️ Si te parece interesante el proyecto, ¡una estrella en el repo ayuda mucho!
 
 </div>
-```
-
----
-
-> ⚠️ **Recuerda:** Una vez que guardes este archivo, ejecuta en tu terminal para que los cambios y las imágenes se reflejen en GitHub:
-> ```bash
-> git add .
-> git commit -m "docs: actualizar rutas de imagenes y README"
-> git push
