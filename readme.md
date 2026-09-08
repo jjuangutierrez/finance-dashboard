@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="frontend/src/assets/hero.png" alt="Finance Dashboard" width="100%" />
+
 # 💰 Finance Dashboard
 
 **Dashboard financiero personal con arquitectura de widgets, construido con React + .NET**
@@ -32,21 +34,30 @@
 
 ## 🚀 Sobre el proyecto
 
-**Finance Dashboard** es una aplicación web completa para gestión de finanzas personales, con un dashboard **basado en widgets arrastrables/configurables** (grid dinámico) donde el usuario arma su propia vista financiera: seguimiento de gastos, metas de ahorro, gastos recurrentes y más.
+A diferencia de una app de finanzas típica (formularios estáticos, tablas fijas), **Finance Dashboard** propone un **espacio de trabajo totalmente interactivo**: el usuario arma su propio panel financiero moviendo, redimensionando y organizando widgets libremente sobre un lienzo dinámico, similar a herramientas tipo Notion o Figma pero aplicado a finanzas personales (seguimiento de gastos, metas de ahorro, gastos recurrentes, etc.).
 
-El objetivo del proyecto es aplicar buenas prácticas de arquitectura de software en un caso real de punta a punta: frontend moderno con React, backend en .NET siguiendo **Clean Architecture**, y un sistema de autenticación robusto con **JWT + verificación en dos pasos (Google Authenticator / TOTP)**.
+El objetivo del proyecto fue ir más allá de un CRUD simple y aplicar buenas prácticas de arquitectura de software en un caso real de punta a punta: frontend moderno con React y librerías de interactividad avanzada, backend en .NET siguiendo **Clean Architecture**, y un sistema de autenticación robusto con **JWT + verificación en dos pasos (Google Authenticator / TOTP)**.
 
 ## ✨ Características
 
 - 🔐 **Autenticación segura**: login con JWT (access + refresh token) y **2FA con Google Authenticator (TOTP)**.
-- 🧩 **Dashboard de widgets**: grid interactivo y reordenable construido con React Flow, cada widget es un módulo independiente.
+- 🧩 **Dashboard 100% interactivo**: los widgets se pueden **mover, redimensionar y reorganizar** libremente sobre un lienzo dinámico construido con React Flow — no es un layout fijo, es un espacio de trabajo real.
 - 📊 **Widgets financieros**:
   - `TrackerWidget` — seguimiento de gastos/ingresos.
   - `SavingGoalWidget` — metas de ahorro con edición de título en línea y modal de transacciones.
-  - Gastos recurrentes (`recurring_expense`).
+  - `RecurringExpenseWidget` — gestión de gastos recurrentes.
 - 🎨 **UI moderna** con [shadcn/ui](https://ui.shadcn.com/) + Tailwind CSS.
 - 🏗️ **Backend en Clean Architecture** (separación en capas: Domain, Application, Infrastructure, API).
 - 🗄️ **Persistencia en SQL Server** con Entity Framework Core y migraciones versionadas.
+
+## 🎯 Qué me aportó este proyecto
+
+Este fue mi proyecto personal más ambicioso hasta ahora, y me sirvió para dar un salto real en varias áreas clave:
+
+- **Arquitectura de software**: pasé de escribir código funcional a diseñar un backend en capas siguiendo Clean Architecture, pensando en mantenibilidad y separación de responsabilidades desde el día uno.
+- **Autenticación y seguridad**: implementé desde cero un flujo completo de JWT (access + refresh tokens) combinado con 2FA vía TOTP (Google Authenticator), entendiendo a fondo cómo funciona la generación y validación de códigos temporales.
+- **React con librerías interactivas**: integré React Flow para construir un canvas de widgets arrastrables y redimensionables, resolviendo retos reales de estado, renderizado y UX que van más allá de un CRUD estándar.
+- **Diseño de UI moderno**: adopté shadcn/ui + Tailwind para construir una interfaz consistente, accesible y con buena experiencia de usuario.
 
 ## 🛠️ Stack tecnológico
 
@@ -85,13 +96,25 @@ El frontend organiza los widgets como módulos independientes que se registran e
 ## 📸 Capturas de pantalla
 
 <div align="center">
-  <img src="frontend/assets/preview1.png" alt="Preview 1 - Dashboard" width="800" />
+  <img src="frontend/src/assets/preview1.png" alt="Preview 1 - Dashboard interactivo" width="800" />
   <br /><br />
-  <img src="frontend/assets/preview2.png" alt="Preview 2" width="390" />
-  <img src="frontend/assets/preview3.png" alt="Preview 3" width="390" />
+  <img src="frontend/src/assets/preview2.png" alt="Preview 2" width="390" />
+  <img src="frontend/src/assets/preview3.png" alt="Preview 3" width="390" />
 </div>
 
 > Capturas tomadas en el entorno local — la app aún no está desplegada online.
+
+<details>
+<summary>🧩 Ver widgets individuales</summary>
+<br>
+
+<div align="center">
+  <img src="frontend/src/assets/TrackerWidget.png" alt="Tracker Widget" width="270" />
+  <img src="frontend/src/assets/SavingGoalWidget.png" alt="Saving Goal Widget" width="270" />
+  <img src="frontend/src/assets/RecurringExpenses.png" alt="Recurring Expenses Widget" width="270" />
+</div>
+
+</details>
 
 ## ⚙️ Instalación y ejecución local
 
