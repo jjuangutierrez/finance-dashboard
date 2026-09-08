@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="Frontend/src/assets/hero.png" alt="Finance Dashboard" width="100%" />
-
 # 💰 Finance Dashboard
 
 **Dashboard financiero personal con arquitectura de widgets, construido con React + .NET**
